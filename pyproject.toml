@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vllama"
-version = "0.1.1"
-description = "CLI tool to run local vision models like stabilityai/sd-turbo, with minor fix"
+version = "0.1.2"
+description = "CLI tool to run local vision models like stabilityai/sd-turbo"
 authors = [
   { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
 ]

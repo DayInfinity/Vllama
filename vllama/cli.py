@@ -62,7 +62,7 @@ def main():
         model_name = args.model
         prompt = args.prompt
         output_dir = args.output_dir or "."
-        core.send_prompt(model_name, prompt, output_dir)
+        core.run_model(model_name, prompt, output_dir)
 
     elif args.command == "post":
         prompt = args.prompt
