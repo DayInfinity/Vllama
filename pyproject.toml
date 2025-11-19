@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vllama"
+version = "0.1.0"
+description = "CLI tool to run local vision models like stabilityai/sd-turbo"
+authors = [
+  { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "torch",
+  "diffusers>=0.18.0",
+  "transformers>=4.0.0",
+  "accelerate>=0.20.0",
+  "kaggle"
+]
+
+[project.scripts]
+vllama = "vllama.cli:main"
