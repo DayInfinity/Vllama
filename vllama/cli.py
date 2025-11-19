@@ -1,6 +1,10 @@
 import argparse
 import sys
 from vllama import core, remote
+import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 def main():
     parser = argparse.ArgumentParser(prog="vllama", description="vllama CLI - manage and run vision models locally or on the cloud GPUs")
@@ -16,7 +20,7 @@ def main():
     init_parser.add_argument("gpu", choices=["gpu"], help="Keyword 'gpu' (to initialize a GPU runtime)")
     init_parser.add_argument("--service", choices=["kaggle", "colab"], required=True, help="Service to initialize the GPU on")
 
-    show_parser = subparsers.add_parser("install", help="Show availble models")
+    show_parser = subparsers.add_parser("show", help="Show availble models")
     show_parser.add_argument("models", nargs='?', const="models", help="(Usage: vllama show models)")
 
     install_parser = subparsers.add_parser("install", help="Install/downoad a model")
@@ -44,7 +48,7 @@ def main():
         remote.login(service, username, key)
 
     elif args.command == "init":
-        sevice = args.service
+        service = args.service
         remote.init_gpu(service)
 
     elif args.command == "show":
@@ -58,7 +62,7 @@ def main():
         model_name = args.model
         prompt = args.prompt
         output_dir = args.output_dir or "."
-        core.send_prompt(prompt, output_dir)
+        core.send_prompt(model_name, prompt, output_dir)
 
     elif args.command == "post":
         prompt = args.prompt

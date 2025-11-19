@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vllama"
-version = "0.1.0"
-description = "CLI tool to run local vision models like stabilityai/sd-turbo"
+version = "0.1.1"
+description = "CLI tool to run local vision models like stabilityai/sd-turbo, with minor fix"
 authors = [
   { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
 ]
@@ -16,7 +16,8 @@ dependencies = [
   "diffusers>=0.18.0",
   "transformers>=4.0.0",
   "accelerate>=0.20.0",
-  "kaggle"
+  "kaggle",
+  "protobuf==3.20.3"
 ]
 
 [project.scripts]
