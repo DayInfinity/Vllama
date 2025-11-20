@@ -3,6 +3,7 @@ import json
 import subprocess
 import tempfile
 import shutil
+import stat
 
 
 # Login to Remote Service
@@ -20,9 +21,16 @@ def login(service: str, username: str = None, key: str = None):
                 json.dump(creds, f)
             os.chmod(credentials_path, 0o600)  # secure the file
             print("Kaggle credentials saved.")
+            print("⚠️  Security reminder: Keep your API credentials secure. Never commit them to version control.")
         else:
             # If not provided, check if file already exists or prompt user
             if os.path.exists(credentials_path):
+                # Verify file permissions
+                file_stat = os.stat(credentials_path)
+                file_mode = stat.S_IMODE(file_stat.st_mode)
+                if file_mode != 0o600:
+                    print("⚠️  Warning: Kaggle credentials file has insecure permissions. Fixing...")
+                    os.chmod(credentials_path, 0o600)
                 print("Using existing Kaggle API credentials.")
             else:
                 print("Kaggle API token not found. Please provide --username and --key, or place your kaggle.json in ~/.kaggle/")
@@ -101,7 +109,8 @@ def run_kaggle(model_name, prompt, output_dir):
     if not os.path.exists(credentials_path) and not (
         os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY")
     ):
-        print("Error: Kaggle API credentials not found. Please set up you kaggle API token in ~/.kaggle/kaggle.json.")
+        print("Error: Kaggle API credentials not found. Please set up your Kaggle API token in ~/.kaggle/kaggle.json.")
+        print("You can obtain your API token from: https://www.kaggle.com/settings/account")
         return 
     
     try:
@@ -110,7 +119,7 @@ def run_kaggle(model_name, prompt, output_dir):
         print("Error: Kaggle CLI is not installed. Please install it with 'pip install kaggle'.")
         return
 
-    usename = None
+    username = None
     if os.path.exists(credentials_path):
         try:
             with open(credentials_path, "r") as f:
