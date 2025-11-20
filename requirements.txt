@@ -1,0 +1,6 @@
+torch
+diffusers>=0.18.0
+transformers>=4.0.0
+accele>=0.20.0
+kaggle
+protobuf==3.20.3
