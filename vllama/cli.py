@@ -29,6 +29,7 @@ def main():
     run_parser = subparsers.add_parser("run", help="Run a model to genrate outputs")
     run_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
     run_parser.add_argument("--prompt", "-p", help="Text prompt for generation. If not provided, entersinteractive mode.")
+    run_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     run_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
     post_parser = subparsers.add_parser("post", help="Send a prompt to a running model session")
@@ -62,7 +63,20 @@ def main():
         model_name = args.model
         prompt = args.prompt
         output_dir = args.output_dir or "."
-        core.run_model(model_name, prompt, output_dir)
+        service = args.service
+        if service and service.lower() == "kaggle":
+            if not prompt:
+                try:
+                    prompt = input("Enter a prompt for image generation: ")
+                except eyboardInterrupt:
+                    print("\nGeneration cancelled by user.")
+                    sys.exit(0)
+                if not prompt:
+                    print("No prompt provided. Exiting.")
+                    sys.exit(0)
+            remote.run_kaggle(model_name, prompt, output_dir)
+        else:
+            core.run_model(model_name, prompt, output_dir)
 
     elif args.command == "post":
         prompt = args.prompt

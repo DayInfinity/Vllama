@@ -7,3 +7,6 @@ __pycache__/
 
 commands.txt
 outputs/
+
+.kaggle/
+logs/
