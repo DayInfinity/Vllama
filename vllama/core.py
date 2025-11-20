@@ -40,17 +40,54 @@ def run_model(model_name: str, prompt: str = None, output_dir: str = "."):
     """
     global _pipeline
 
+    if torch.cuda.is_available():
+        props = torch.cuda.get_device_properties(0)
+        vram_gb = props.total_memory / (1024 ** 3)
+        print(f"CUDA device: {props.name}, VRAM: {vram_gb:.2f} GB")
+
+        if vram_gb <= 3:
+            device = "cuda"
+            dtype = torch.float32
+            low_vram = True
+        else:
+            device = "cuda"
+            dtype = torch.float16
+            low_vram = False
+        
+        print("CUDA device detected. Using GPU for inference.")
+    else:
+        device = "cpu"
+        dtype = torch.float32
+        low_vram = True
+        print("No CUDA device detected. Using CPU for inference (may be slow).")
+
+
     # Load the model pipeline if not already loaded or if a different model is requested
     if _pipeline is None or getattr(_pipeline, 'model_name', None) != model_name:
-        print(f"Loading model '{model_name}'...")
+        print(f"Loading model '{model_name}' on {device} with dtype = {dtype} ...")
         try:
-            _pipeline = StableDiffusionPipeline.from_pretrained(model_name, torch_dtype=torch.float16)
+            _pipeline = StableDiffusionPipeline.from_pretrained(
+                model_name,
+                torch_dtype=dtype,
+                safety_checker=None,
+            )
         except Exception as e:
             print(f"Failed to load model {model_name}: {e}")
             return
         # Move pipeline to GPU if available
-        if torch.cuda.is_available():
-            _pipeline = _pipeline.to("cuda")
+        # if torch.cuda.is_available():
+        #     _pipeline = _pipeline.to("cuda")
+        _pipeline = _pipeline.to(device)
+        _pipeline.low_vram = low_vram
+        if device == "cuda":
+            try:
+                _pipeline.enable_xformers_memory_efficient_attention()
+            except Exception as e:
+                pass
+        
+        _pipeline.enable_attention_slicing()
+        _pipeline.enable_vae_tiling()
+
         # Store model_name as an attribute for reference (not a built-in property of pipeline, we add it)
         _pipeline.model_name = model_name
         print(f"Model loaded. (Model: {model_name})")
@@ -90,9 +127,42 @@ def _generate_image(prompt: str, output_dir: str):
         return
     print(f"Generating image for prompt: \"{prompt}\"...")
     # Inference: we can set some default generation parameters or expose via CLI
+
+    steps = 50
+    height = 512
+    width = 512
+    guidance = 7.5
+
+    low_vram = getattr(_pipeline, 'low_vram', False)
+    model_name = getattr(_pipeline, 'model_name', '')
+    if "sd-turbo" in model_name:
+        steps = 40
+        guidance = 5.0
+
+    if low_vram:
+        steps = min(steps, 30)
+        print("Low VRAM mode: reducing inference steps for performance.")
+        height = width = 512
+        if "sd-turbo" in model_name:
+            guidance = 5
+
+    # if torch.cuda.is_available():
+    #     vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+    #     if vram <= 3:
+    #         steps = 25
+    #         height = width = 512
+    #         guidance = 7.5
+    #         print("Low VRAM detected. Adjusting generation parameters for performance.")
+
     try:
         # Use the pipeline to generate image
-        result = _pipeline(prompt, num_inference_steps=50, guidance_scale=7.5)
+        result = _pipeline(
+            prompt, 
+            num_inference_steps=steps, 
+            guidance_scale=guidance,
+            height=height, 
+            width=width
+        )
         # Diffusers pipeline returns an object with `.images`
         image = result.images[0]
     except Exception as e:
