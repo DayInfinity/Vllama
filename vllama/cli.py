@@ -16,19 +16,19 @@ def main():
     login_parser.add_argument("--key", help="kaggle API key (if not using default credentials file)")
 
 
-    init_parser = subparsers.add_parser("init", help="Initialize a GPU session on the specifies service")
+    init_parser = subparsers.add_parser("init", help="Initialize a GPU session on the specified service")
     init_parser.add_argument("gpu", choices=["gpu"], help="Keyword 'gpu' (to initialize a GPU runtime)")
     init_parser.add_argument("--service", choices=["kaggle", "colab"], required=True, help="Service to initialize the GPU on")
 
-    show_parser = subparsers.add_parser("show", help="Show availble models")
+    show_parser = subparsers.add_parser("show", help="Show available models")
     show_parser.add_argument("models", nargs='?', const="models", help="(Usage: vllama show models)")
 
-    install_parser = subparsers.add_parser("install", help="Install/downoad a model")
+    install_parser = subparsers.add_parser("install", help="Install/download a model")
     install_parser.add_argument("model", help="Name of the model to install(eg.,stabilityai/sd-turbo)")
 
-    run_parser = subparsers.add_parser("run", help="Run a model to genrate outputs")
+    run_parser = subparsers.add_parser("run", help="Run a model to generate outputs")
     run_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
-    run_parser.add_argument("--prompt", "-p", help="Text prompt for generation. If not provided, entersinteractive mode.")
+    run_parser.add_argument("--prompt", "-p", help="Text prompt for generation. If not provided, enters interactive mode.")
     run_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     run_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
@@ -68,7 +68,7 @@ def main():
             if not prompt:
                 try:
                     prompt = input("Enter a prompt for image generation: ")
-                except eyboardInterrupt:
+                except KeyboardInterrupt:
                     print("\nGeneration cancelled by user.")
                     sys.exit(0)
                 if not prompt:

@@ -101,7 +101,7 @@ def run_kaggle(model_name, prompt, output_dir):
     if not os.path.exists(credentials_path) and not (
         os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY")
     ):
-        print("Error: Kaggle API credentials not found. Please set up you kaggle API token in ~/.kaggle/kaggle.json.")
+        print("Error: Kaggle API credentials not found. Please set up your Kaggle API token in ~/.kaggle/kaggle.json.")
         return 
     
     try:
@@ -110,7 +110,7 @@ def run_kaggle(model_name, prompt, output_dir):
         print("Error: Kaggle CLI is not installed. Please install it with 'pip install kaggle'.")
         return
 
-    usename = None
+    username = None
     if os.path.exists(credentials_path):
         try:
             with open(credentials_path, "r") as f:
