@@ -2,19 +2,24 @@ import setuptools
 
 setuptools.setup(
     name="vllama",
-    version="0.3.1",
+    version="0.3.2",
     author="Gopu Manvith",
     description="CLI tool to download and run vision models (like Stable Diffusion) on local and cloud GPUs",
     packages=["vllama"],
     python_requires=">=3.8",
     install_requires=[
         "argparse",
-        "diffusers>=0.18.0",
-        "transformers>=4.0.0",
+        "torch>=2.0.0",
+        "diffusers>=0.20.0",
+        "transformers>=4.30.0",
         "accelerate>=0.20.0",
-        "torch",
-        "kaggle",
-        "protobuf==3.20.3"
+        "protobuf>=3.20.0",
+        "kaggle>=1.5.0",
+        "pandas>=1.5.0",
+        "numpy>=1.23.0",
+        "matplotlib>=3.5.0",
+        "seaborn>=0.12.0",
+        "scikit-learn>=1.2.0"
     ],
     entry_points={
         "console_scripts": [
