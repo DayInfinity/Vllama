@@ -4,6 +4,7 @@ dist/
 build/
 *.egg-info/
 __pycache__/
+*.__pycache__/
 
 commands.txt
 outputs/

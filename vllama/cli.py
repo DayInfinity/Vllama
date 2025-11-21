@@ -1,6 +1,6 @@
 import argparse
 import sys
-from vllama import core, remote
+from vllama import core, remote, preprocess
 import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -39,6 +39,12 @@ def main():
     stop_parser = subparsers.add_parser("stop", help="Stop the running model session")
 
     logout_parser = subparsers.add_parser("logout", help="Logout from the current service")
+
+    data_parser = subparsers.add_parser("data", help="Dataset cleanng and processing")
+    data_parser.add_argument("--path", help="Path to the dataset")
+    data_parser.add_argument("--target", help="Target Column")
+    data_parser.add_argument("--test_size", "-t", help="Test-train split")
+    data_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
 
     args = parser.parse_args()
 
@@ -88,6 +94,14 @@ def main():
 
     elif args.command == "logout":
         remote.logout()
+
+    elif args.command == "data":
+        path = args.path
+        target = args.target
+        test_size = args.test_size or 0.2
+        output_dir = args.output_dir or "."
+        preprocess.autonomous_data_preprocessing(dataset_path = path, test_size=test_size,target_column = target, output_dir = output_dir)
+
 
     else:
         parser.print_help()
