@@ -1,136 +1,494 @@
-# Vllama
+# Vllama: Vision Models Made Easy 🚀
 
-Vllama is a powerful yet simple command-line tool designed to make running vision models (like Stable Diffusion) easy for everyone. Whether you have a powerful local GPU or need to offload the heavy lifting to the cloud (Kaggle), Vllama handles it seamlessly.
+Vllama is a comprehensive CLI tool that simplifies working with vision models and machine learning workflows. Whether you're preprocessing datasets, training models with AutoML, or generating images with state-of-the-art diffusion models, Vllama makes it easy - locally or on cloud GPUs.
 
-It also includes autonomous data preprocessing tools to help you clean and prepare your datasets for machine learning with a single command.
+---
 
-## Features
+## ✨ Key Features
 
-*   **🚀 Run Locally**: Generate high-quality images on your own machine using models like `stabilityai/sd-turbo`.
-*   **☁️ Cloud Execution**: Seamlessly offload generation to Kaggle GPUs if your local hardware is limited.
-*   **💬 Interactive Mode**: Keep the model loaded and generate multiple images in a chat-like session for faster results.
-*   **🧹 Autonomous Data Cleaning**: Automatically handle missing values, encode categories, scale features, and detect outliers in your datasets.
-*   **📦 Model Management**: Easily download, install, and manage different vision models.
-*   **🔐 Secure & Private**: Your credentials and data stay with you.
+- **🔧 Autonomous Data Preprocessing**: Intelligent data cleaning, encoding, scaling, and feature selection
+- **🤖 AutoML Training**: Train and compare multiple ML models automatically with hyperparameter tuning
+- **🎨 Vision Model Inference**: Generate images using pre-trained diffusion models (Stable Diffusion, SD-Turbo)
+- **☁️ Cloud GPU Integration**: Seamlessly offload computation to Kaggle GPUs
+- **📊 Rich Visualizations**: Automatic generation of insights, correlations, and performance metrics
+- **💾 Smart Output Management**: Organized folder structure with logs, models, and visualizations
 
-## Installation
+---
 
-You can install Vllama directly from the source:
+## 📦 Installation
 
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/ManvithGopu13/Vllama.git
 cd Vllama
+```
+
+### 2. Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-## Quick Start
-
-**1. Generate an image locally:**
+### 3. Install Vllama CLI
 ```bash
-vllama run stabilityai/sd-turbo --prompt "A cyberpunk city at night"
+pip install -e .
 ```
 
-**2. Generate an image on Kaggle (requires login):**
+Now you can use `vllama` from anywhere in your terminal!
 
-Requires Kaggle API credentials.
+---
+
+## 🚀 Quick Start Guide
+
+### Data Preprocessing & Model Training Workflow
+
+#### Step 1: Preprocess Your Dataset
+Clean and prepare your data for machine learning:
 
 ```bash
-vllama login --service kaggle --username YOUR_USER --key YOUR_KEY
-vllama run stabilityai/sd-turbo --prompt "A cat in space" --service kaggle
+vllama data --path dataset.csv --target price --test_size 0.2 --output_dir ./outputs
 ```
 
-**3. Clean a dataset:**
+**What it does:**
+- Automatically detects column types (numerical/categorical)
+- Handles missing values intelligently (KNN imputation, median/mode filling)
+- Removes duplicates and handles outliers
+- Encodes categorical variables (label encoding, one-hot encoding, frequency encoding)
+- Scales features using RobustScaler
+- Performs feature selection (removes zero-variance and highly correlated features)
+- Generates visualizations (missing values heatmap, correlation matrix, etc.)
+- Splits data into train/test sets
+- Saves processed data as `train_data.csv` and `test_data.csv`
+
+**Parameters:**
+- `--path`: Path to your dataset (supports CSV, Excel, JSON, Parquet)
+- `--target`: Target column name (auto-detected if not specified)
+- `--test_size` or `-t`: Test set proportion (default: 0.2)
+- `--output_dir` or `-o`: Output directory (default: current directory)
+
+**Output Structure:**
+```
+output_folder_YYYYMMDD_HHMMSS/
+├── train_data.csv
+├── test_data.csv
+├── processed_full_data.csv
+├── preprocessing_log.json
+├── preprocessing_log.txt
+├── summary_report.json
+├── transformation_metadata.json
+└── visualizations/
+    ├── 01_missing_initial.png
+    ├── 02_dtypes.png
+    ├── 03_corr_processed.png
+    ├── 04_target_processed.png
+    └── 05_mi.png
+```
+
+#### Step 2: Train Models with AutoML
+Automatically train and compare multiple ML models:
+
 ```bash
-vllama data --path my_data.csv --target price
+vllama train --path ./outputs/output_folder_YYYYMMDD_HHMMSS --target price
 ```
 
-## Configuration Guide (Kaggle Setup)
+**What it does:**
+- Auto-detects task type (classification or regression)
+- Trains multiple models with hyperparameter tuning:
+  - **Classification**: Logistic Regression, Random Forest, XGBoost, LightGBM, CatBoost, SVM, KNN, MLP, Naive Bayes
+  - **Regression**: Random Forest, XGBoost, LightGBM, CatBoost, SVR, KNN, MLP
+- Uses RandomizedSearchCV for efficient hyperparameter optimization
+- Evaluates models on test set with comprehensive metrics
+- Generates visualizations (confusion matrices, ROC curves, prediction plots)
+- Saves all models and creates a leaderboard
+- Identifies and saves the best performing model
 
-To use Vllama with Kaggle, you need your API credentials.
+**Parameters:**
+- `--path` or `-p`: Path to folder containing `train_data.csv` and `test_data.csv`
+- `--target` or `-t`: Target column name
 
-1.  Go to your **Kaggle Account Settings**.
-2.  Scroll down to the **API** section.
-3.  Click **Create New Token** to download `kaggle.json`.
+**Output Structure:**
+```
+results/
+├── model_summary.csv          # Leaderboard of all models
+├── best_model.pkl             # Best performing model
+├── best_model.txt             # Best model details
+├── report.html                # HTML report with all results
+└── per_model/
+    ├── RandomForest/
+    │   ├── RandomForest_best_model.pkl
+    │   ├── RandomForest_tuning_results.csv
+    │   ├── RandomForest_confusion_matrix.png
+    │   └── RandomForest_roc_curve.png
+    ├── XGBoost/
+    └── ...
+```
 
-You can then configure Vllama in two ways:
+---
 
-**Option A: Login Command (Recommended)**
-Run the following command to securely store your credentials:
+### Vision Model Inference Workflow
+
+#### Step 1: Show Available Models
 ```bash
-vllama login --service kaggle --username <your_username> --key <your_api_key>
+vllama show models
 ```
 
-**Option B: Manual Setup**
-Place your `kaggle.json` file in the default location:
-*   **Windows**: `C:\Users\<User>\.kaggle\kaggle.json`
-*   **Linux/Mac**: `~/.kaggle/kaggle.json`
+Lists all supported vision models with descriptions.
 
-## Command Reference
+#### Step 2: Install a Model (Optional)
+Pre-download model weights to cache:
 
-Here is the full list of commands you can use with Vllama:
+```bash
+vllama install stabilityai/sd-turbo
+```
 
-### Core Commands
+#### Step 3: Generate Images Locally
 
-| Command | Description | Example |
-| :--- | :--- | :--- |
-| `vllama run <model>` | Run a model. Add `--prompt` for a single image, or leave empty for interactive mode. | `vllama run stabilityai/sd-turbo` |
-| `vllama install <model>` | Download and install a model for local use. | `vllama install stabilityai/sd-turbo` |
-| `vllama show models` | List all available models you can use. | `vllama show models` |
-| `vllama stop` | Stop the currently running model session to free up memory. | `vllama stop` |
+**Single Prompt Mode:**
+```bash
+vllama run stabilityai/sd-turbo --prompt "A serene mountain landscape at sunset" --output_dir ./images
+```
 
-### Remote & Cloud Commands
+**Interactive Mode:**
+```bash
+vllama run stabilityai/sd-turbo
+```
+Then enter prompts interactively. Type `exit` or `quit` to stop.
 
-| Command | Description | Example |
-| :--- | :--- | :--- |
-| `vllama login` | Log in to a cloud service. Options: `--service`, `--username`, `--key`. | `vllama login --service kaggle` |
-| `vllama init gpu` | Initialize a GPU session on a remote service. | `vllama init gpu --service kaggle` |
-| `vllama logout` | Log out and remove stored credentials. | `vllama logout` |
+**Parameters:**
+- `model`: Model name (e.g., `stabilityai/sd-turbo`)
+- `--prompt` or `-p`: Text prompt for image generation
+- `--output_dir` or `-o`: Directory to save generated images (default: current directory)
+- `--service` or `-s`: Offload to cloud service (e.g., `kaggle`)
 
-### Data Tools
+**Features:**
+- Automatic GPU/CPU detection
+- Low VRAM optimization (for GPUs with ≤3GB VRAM)
+- Memory-efficient attention (xformers)
+- Attention slicing and VAE tiling for better performance
 
-| Command | Description | Example |
-| :--- | :--- | :--- |
-| `vllama data` | Preprocess a dataset. Options: `--path`, `--target`, `--test_size`, `--output_dir`. | `vllama data --path data.csv` |
+#### Step 4: Generate Images on Kaggle GPU
 
-### Arguments Guide
+```bash
+vllama run stabilityai/sd-turbo --service kaggle --prompt "A cyberpunk city at night"
+```
 
-*   `--prompt`, `-p`: The text description for the image you want to generate.
-*   `--service`, `-s`: The cloud service to use (currently supports `kaggle`).
-*   `--output_dir`, `-o`: Where to save the generated images or processed data.
-*   `--test_size`, `-t`: The proportion of the dataset to include in the test split (e.g., `0.2` for 20%).
+**What it does:**
+- Creates a Kaggle kernel with GPU enabled
+- Installs dependencies automatically
+- Runs the model on Kaggle's GPU
+- Downloads the generated image to your local machine
 
-## Troubleshooting
+---
 
-| Issue | Possible Cause | Solution |
-| :--- | :--- | :--- |
-| **`CUDA out of memory`** | Your GPU doesn't have enough VRAM. | Try running with `--service kaggle` to use cloud GPUs. |
-| **`403 Forbidden` (Kaggle)** | Invalid or expired API credentials. | Run `vllama logout` then `vllama login` with new keys. |
-| **`Model not found`** | The model name is incorrect or not installed. | Check spelling or run `vllama install <model>`. |
-| **`ImportError`** | Missing dependencies. | Run `pip install -r requirements.txt`. |
+## 📚 Complete Command Reference
 
-## Security Best Practices
+### Data & ML Commands
 
-*   **Protect your API Keys**: Never share your `kaggle.json` or commit it to public repositories.
-*   **Review Prompts**: When using remote execution, avoid sending sensitive personal information in prompts.
-*   **Check Permissions**: Ensure your output directories have appropriate permissions if working on a shared machine.
-*   **Report Vulnerabilities**: See [SECURITY.md](SECURITY.md) for how to report security issues.
+#### `vllama data`
+Autonomous data preprocessing and cleaning.
 
-## Future Roadmap
+```bash
+vllama data --path <dataset> --target <column> [--test_size <float>] [--output_dir <dir>]
+```
 
-We are actively working on these exciting new features:
+**Examples:**
+```bash
+# Basic usage with auto-detected target
+vllama data --path sales_data.csv
 
-*   **Model Management**: Commands to list installed models and remove old ones.
-*   **Progress Bars**: Visual indicators for downloads and long-running tasks.
-*   **Configuration**: Save your preferences (like default model) in a config file.
-*   **Batch Processing**: Generate hundreds of images from a list of prompts in one go.
-*   **Advanced Editing**: Image-to-Image generation and Inpainting support.
-*   **Web UI**: A beautiful browser-based interface for those who prefer not to use the terminal.
-*   **Negative Prompts**: Specify what you *don't* want in your images (e.g., "blurry", "low quality").
+# Specify target column and test size
+vllama data --path housing.csv --target price --test_size 0.25
 
-## Contributing
+# Custom output directory
+vllama data --path data.csv --target label -t 0.3 -o ./processed_data
+```
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to get started.
+#### `vllama train`
+AutoML model training with hyperparameter tuning.
 
-## License
+```bash
+vllama train --path <data_folder> --target <column>
+```
 
-This project is open source.
+**Examples:**
+```bash
+# Train on preprocessed data
+vllama train --path ./output_folder_20231124_143022 --target SalePrice
+
+# Short form
+vllama train -p ./data -t label
+```
+
+---
+
+### Vision Model Commands
+
+#### `vllama show models`
+List all supported vision models.
+
+```bash
+vllama show models
+```
+
+#### `vllama install`
+Download and cache a model.
+
+```bash
+vllama install <model_name>
+```
+
+**Example:**
+```bash
+vllama install stabilityai/sd-turbo
+```
+
+#### `vllama run`
+Run a vision model for image generation.
+
+```bash
+vllama run <model_name> [--prompt <text>] [--service <service>] [--output_dir <dir>]
+```
+
+**Examples:**
+```bash
+# Single prompt
+vllama run stabilityai/sd-turbo --prompt "A beautiful sunset"
+
+# Interactive mode
+vllama run stabilityai/sd-turbo
+
+# Run on Kaggle GPU
+vllama run stabilityai/sd-turbo --service kaggle --prompt "A dragon flying"
+
+# Custom output directory
+vllama run stabilityai/sd-turbo -p "A forest" -o ./my_images
+```
+
+#### `vllama post`
+Send a prompt to an already running model session.
+
+```bash
+vllama post <prompt> [--output_dir <dir>]
+```
+
+**Example:**
+```bash
+vllama post "A magical castle" --output_dir ./outputs
+```
+
+#### `vllama stop`
+Stop the currently running model session.
+
+```bash
+vllama stop
+```
+
+---
+
+### Cloud Integration Commands
+
+#### `vllama login`
+Authenticate with a cloud GPU service.
+
+```bash
+vllama login --service <service> [--username <user>] [--key <api_key>]
+```
+
+**Examples:**
+```bash
+# Login to Kaggle with credentials
+vllama login --service kaggle --username myusername --key abc123xyz
+
+# Use existing Kaggle credentials from ~/.kaggle/kaggle.json
+vllama login --service kaggle
+```
+
+#### `vllama init gpu`
+Initialize a GPU session on a cloud service.
+
+```bash
+vllama init gpu --service <service>
+```
+
+**Example:**
+```bash
+vllama init gpu --service kaggle
+```
+
+#### `vllama logout`
+Remove cloud service credentials.
+
+```bash
+vllama logout
+```
+
+---
+
+## 🎯 Common Workflows
+
+### Workflow 1: Complete ML Pipeline
+```bash
+# 1. Preprocess data
+vllama data --path raw_data.csv --target price
+
+# 2. Train models (use the output folder from step 1)
+vllama train --path ./output_folder_20231124_143022 --target price
+
+# 3. Review results in the results/ folder
+```
+
+### Workflow 2: Local Image Generation
+```bash
+# 1. Install model (optional, first-time only)
+vllama install stabilityai/sd-turbo
+
+# 2. Generate images interactively
+vllama run stabilityai/sd-turbo
+
+# Enter prompts:
+# Prompt> A serene lake with mountains
+# Prompt> A futuristic city
+# Prompt> exit
+```
+
+### Workflow 3: Cloud GPU Image Generation
+```bash
+# 1. Login to Kaggle
+vllama login --service kaggle --username myuser --key myapikey
+
+# 2. Generate image on Kaggle GPU
+vllama run stabilityai/sd-turbo --service kaggle --prompt "A magical forest"
+
+# Image will be downloaded automatically
+```
+
+---
+
+## 📊 Understanding Outputs
+
+### Data Preprocessing Outputs
+
+**Logs:**
+- `preprocessing_log.json`: Detailed JSON log of all preprocessing steps
+- `preprocessing_log.txt`: Human-readable text log
+- `summary_report.json`: Summary statistics and metadata
+
+**Data Files:**
+- `train_data.csv`: Training dataset (80% by default)
+- `test_data.csv`: Testing dataset (20% by default)
+- `processed_full_data.csv`: Complete processed dataset
+- `transformation_metadata.json`: Encoders and scalers metadata for future use
+
+**Visualizations:**
+- Missing values heatmap
+- Data types distribution
+- Correlation matrix (top 20 features)
+- Target distribution
+- Mutual information scores
+
+### Model Training Outputs
+
+**Model Files:**
+- `best_model.pkl`: Best performing model (can be loaded with joblib)
+- `model_summary.csv`: Comparison of all trained models
+- `report.html`: Interactive HTML report
+
+**Per-Model Outputs:**
+- `{model}_best_model.pkl`: Saved model
+- `{model}_tuning_results.csv`: Hyperparameter search results
+- `{model}_confusion_matrix.png`: Confusion matrix (classification)
+- `{model}_roc_curve.png`: ROC curve (binary classification)
+- `{model}_pred_vs_true.png`: Scatter plot (regression)
+
+### Vision Model Outputs
+
+Generated images are saved as:
+```
+vllama_output_{timestamp}.png          # Local generation
+vllama_kaggle_{timestamp}.png          # Kaggle generation
+```
+
+---
+
+## 🔧 Advanced Configuration
+
+### Environment Variables
+
+Create a `.env` file for configuration:
+
+```env
+# Kaggle API Credentials
+KAGGLE_USERNAME=your_username
+KAGGLE_KEY=your_api_key
+
+# Model Cache Directory (optional)
+HF_HOME=/path/to/cache
+```
+
+### GPU Optimization
+
+Vllama automatically optimizes for your GPU:
+- **High VRAM (>3GB)**: Uses float16, full resolution (512x512), more inference steps
+- **Low VRAM (≤3GB)**: Uses float32, reduced steps, memory-efficient attention
+- **CPU**: Falls back to CPU inference (slower but works)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
+## 📄 License
+
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
+
+---
+
+## 🆘 Troubleshooting
+
+### Common Issues
+
+**Issue: "Kaggle API credentials not found"**
+```bash
+# Solution: Set up Kaggle credentials
+vllama login --service kaggle --username YOUR_USERNAME --key YOUR_API_KEY
+```
+
+**Issue: "CUDA out of memory"**
+```bash
+# Solution: The tool automatically handles low VRAM, but you can also:
+# 1. Close other GPU applications
+# 2. Use CPU mode (automatic fallback)
+# 3. Use Kaggle GPU instead
+vllama run model --service kaggle --prompt "your prompt"
+```
+
+**Issue: "Target column not found"**
+```bash
+# Solution: Specify the target column explicitly
+vllama data --path data.csv --target your_column_name
+```
+
+---
+
+## 📞 Support
+
+- **Documentation**: [GitHub Repository](https://github.com/ManvithGopu13/Vllama)
+- **Issues**: [GitHub Issues](https://github.com/ManvithGopu13/Vllama/issues)
+- **Email**: manvithgopu1394@gmail.com
+
+---
+
+## 🌟 Acknowledgments
+
+Built with:
+- [PyTorch](https://pytorch.org/)
+- [Hugging Face Diffusers](https://huggingface.co/docs/diffusers)
+- [Scikit-learn](https://scikit-learn.org/)
+- [XGBoost](https://xgboost.readthedocs.io/), [LightGBM](https://lightgbm.readthedocs.io/), [CatBoost](https://catboost.ai/)
+- [Kaggle API](https://github.com/Kaggle/kaggle-api)
+
+---
+
+**Made with ❤️ by Gopu Manvith**
