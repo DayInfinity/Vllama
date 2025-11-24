@@ -99,7 +99,7 @@ class AutonomousDataPreprocessor:
         self.log_step("Basic analysis complete", info)
 
         # Simple visualizations (guarded for huge data)
-        if self.df.shape[1] <= 50:
+        if self.df.shape[1] <= 100:
             missing = self.df.isnull()
             if missing.sum().sum() > 0:
                 plt.figure(figsize=(10, 6))
@@ -110,6 +110,7 @@ class AutonomousDataPreprocessor:
                     f"{self.output_folder}/visualizations/01_missing_initial.png",
                     dpi=200,
                 )
+                print("Saved missing values heatmap.")
                 plt.close()
 
         dtype_counts = self.df.dtypes.value_counts()
@@ -121,6 +122,7 @@ class AutonomousDataPreprocessor:
             f"{self.output_folder}/visualizations/02_dtypes.png",
             dpi=200,
         )
+        print("Saved data types distribution plot.")
         plt.close()
 
     # ---------------------- target & types ---------------------- #
@@ -579,6 +581,60 @@ class AutonomousDataPreprocessor:
 
         self.log_step("Saved logs and summary", summary)
 
+    def save_transformation_metadata(self):
+        """
+        Save the encoders, scalers, and other transformation metadata to a JSON file.
+        This metadata can be used to apply the same transformations to new datasets.
+        """
+        metadata = {
+            "encoders": {
+                col: encoder.classes_.tolist() for col, encoder in self.encoders.items()
+            },
+            "target_encoder": self.target_encoder.classes_.tolist()
+            if self.target_encoder else None,
+            "scaler": {
+                "center_": self.scaler.center_.tolist() if self.scaler else None,
+                "scale_": self.scaler.scale_.tolist() if self.scaler else None,
+                "feature_names": self.numerical_columns,  # Save the feature names used for scaling
+            },
+            "one_hot_columns": [
+                col for col in self.df.columns if col not in self.numerical_columns + self.categorical_columns + [self.target_column]
+            ],  # Save one-hot encoded columns
+        }
+
+        metadata_path = os.path.join(self.output_folder, "transformation_metadata.json")
+        with open(metadata_path, "w") as f:
+            json.dump(metadata, f, indent=4)
+
+        self.log_step("Saved transformation metadata", metadata_path)
+
+    def load_transformation_metadata(self, metadata_path):
+        """
+        Load the encoders, scalers, and other transformation metadata from a JSON file.
+        This metadata can be used to apply the same transformations to new datasets.
+        """
+        with open(metadata_path, "r") as f:
+            metadata = json.load(f)
+
+        # Load encoders
+        self.encoders = {
+            col: LabelEncoder().fit(classes)
+            for col, classes in metadata.get("encoders", {}).items()
+        }
+
+        # Load target encoder
+        if metadata.get("target_encoder"):
+            self.target_encoder = LabelEncoder()
+            self.target_encoder.classes_ = np.array(metadata["target_encoder"])
+
+        # Load scaler
+        if metadata.get("scaler"):
+            self.scaler = RobustScaler()
+            self.scaler.center_ = np.array(metadata["scaler"].get("center_", []))
+            self.scaler.scale_ = np.array(metadata["scaler"].get("scale_", []))
+
+        self.log_step("Loaded transformation metadata", metadata_path)
+
     # ---------------------- orchestrator ---------------------- #
     def run(self) -> bool:
         print("\n" + "=" * 80)
@@ -602,6 +658,7 @@ class AutonomousDataPreprocessor:
             self.visualize_processed()
             self.split_and_save()
             self.save_logs_and_summary()
+            self.save_transformation_metadata()
 
             print("\n" + "=" * 80)
             print("PREPROCESSING COMPLETE")
