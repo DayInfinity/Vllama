@@ -1,6 +1,6 @@
 import argparse
 import sys
-from vllama import core, remote, preprocess
+from vllama import core, model_training, remote, preprocess
 import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -45,6 +45,10 @@ def main():
     data_parser.add_argument("--target", help="Target Column")
     data_parser.add_argument("--test_size", "-t", help="Test-train split")
     data_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
+
+    train_parser = subparsers.add_parser("train", help="AutoML model training on processed data")
+    train_parser.add_argument("--path", "-p", help="Path to the datasets folder, woth train_data.csv and test_data.csv")
+    train_parser.add_argument("--target", "-t", help="Target Column")
 
     args = parser.parse_args()
 
@@ -102,6 +106,10 @@ def main():
         output_dir = args.output_dir or "."
         preprocess.autonomous_data_preprocessing(dataset_path = path, test_size=test_size,target_column = target, output_dir = output_dir)
 
+    elif args.command == "train":
+        path = args.path
+        target_column = args.target
+        model_training.run_automl_training(data_dir= path, target_column=target_column)
 
     else:
         parser.print_help()
