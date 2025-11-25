@@ -32,7 +32,7 @@ def main():
     run_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     run_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
-    run_video_parser = subaparsers.add_parser("run_video", help="To generate video using prompt")
+    run_video_parser = subparsers.add_parser("run_video", help="To generate video using prompt")
     run_video_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
     run_video_parser.add_argument("--prompt", "-p", help="Text prompt for generation. If not provided, enters interactive mode.")
     run_video_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")

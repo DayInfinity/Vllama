@@ -276,34 +276,40 @@ subprocess.run(['pip', 'install', '--no-cache-dir', 'diffusers[torch]==0.20.2',
                 'transformers==4.33.0', 'accelerate==0.22.0', 'xformers==0.0.20','protobuf==3.20.3', 'huggingface-hub==0.25.2' , '--quiet'])
 from diffusers import StableDiffusionPipeline
 import torch
+import numpy as np
+import imageio
 from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
-from diffusers.utils import export_to_video
-pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype = torch.float16, variant = "fp16")
+pipe = DiffusionPipeline.from_pretrained({model_str}, torch_dtype = torch.float16, variant = "fp16")
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 pipe.enable_model_cpu_offload()
 pipe.to('cuda')
 prompt = {prompt_str}
-video_frames = pipe(prompt, num_inference_steps = 200).frames
-import numpy as np
-import imageio
-def export_to_video(video_frames, output_path="output.mp4", fps=8):
-   # unwrap if needed: (1,16,256,256,3) -> (16,256,256,3)
-   if len(video_frames) == 1 and video_frames[0].ndim == 4:
-       video_frames = video_frames[0]
-   frames = []
-   for frame in video_frames:
-       # Convert float32 [0,1] -> uint8 [0,255]
-       if frame.dtype != np.uint8:
-           frame = (255 * np.clip(frame, 0, 1)).astype(np.uint8)
-       frames.append(frame)
-   imageio.mimsave(output_path, frames, fps=fps, quality=8)
-   return output_path
+result = pipe(prompt, num_inference_steps = 200)
+frames = result.frames  # this should be a list/array of individual frames
 
-# ---- usage ----
-# unwrap manually before passing
-video_frames = video_frames[0]   # (16,256,256,3)
-print(video_frames.shape)        # should print (16,256,256,3)
-video_path = export_to_video(video_frames, "my_video.mp4")
+print("Number of frames:", len(frames))
+print("Single frame shape:", np.array(frames[0]).shape)
+
+def export_to_video(frames, output_path="output.mp4", fps=8):
+    out = []
+    for frame in frames:
+        f = np.array(frame)
+        # f should now be (H, W, 3)
+        if f.dtype != np.uint8:
+            f = (255 * np.clip(f, 0, 1)).astype(np.uint8)
+        out.append(f)
+
+    imageio.mimsave(
+        output_path,
+        out,
+        fps=fps,
+        quality=8,
+        macro_block_size=1,  # avoid the resizing warning
+    )
+    return output_path
+
+
+video_path = export_to_video(frames, "result.mp4")
 print("Video saved at:", video_path)
 """
         with open(script_path, 'w') as f:
@@ -358,24 +364,28 @@ print("Video saved at:", video_path)
             if "error" in status_lower or "failed" in status_lower:
                 print("Kaggle kernel execution failed. Please check the Kaggle notebook for errors.")
                 return
-            if time.time() - start_time > 900:  # timeout after 5 minutes
+            if time.time() - start_time > 900:  # timeout after 15 minutes
                 print("Timed out waiting for Kaggle kernel to complete.")
                 return
 
-        # 5. Download the generated image from Kaggle
+        # 5. Download the generated video from Kaggle
         os.makedirs(output_dir, exist_ok=True)
         print(f"Downloading output to {output_dir}...")
         out_res = subprocess.run(["kaggle", "kernels", "output", kernel_ref, "-p", output_dir],
-                                 capture_output=True, text=True)
-        if out_res.returncode != 0:
-            print("Error downloading output from Kaggle:")
-            print(out_res.stderr or out_res.stdout)
+                                 capture_output=True, text=True, errors='ignore')
+        
+        # Check if the file was actually downloaded (regardless of return code)
+        source_path = os.path.join(output_dir, "result.mp4")
+        final_video_path = os.path.join(output_dir, f"vllama_video_output_{timestamp}.mp4")
+        
+        if os.path.exists(source_path):
+            os.rename(source_path, final_video_path)
+            print(f"Video successfully downloaded and saved to {final_video_path}")
         else:
-            video_path = os.path.join(output_dir, f"vllama_kaggle_{timestamp}.png")
-            if os.path.exists(video_path):
-                print(f"videeo successfully downloaded to {video_path}")
-            else:
-                print("video output downloaded to the specified directory.")
+            print("Error: Video file not found after download.")
+            if out_res.returncode != 0:
+                print("Kaggle output error:")
+                print(out_res.stderr or out_res.stdout)
     finally:
         # Clean up the temporary kernel files
         shutil.rmtree(kernel_dir, ignore_errors=True)    

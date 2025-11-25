@@ -8,7 +8,7 @@ _pipeline = None
 
 _SUPPORTED_MODELS = {
     "stabilityai/sd-turbo": "StabilityAI SD-Turbo (distilled Stable Diffusion 2.1, fast text-to-image model)",
-
+    "damo-vilab/text-to-video-ms-1.7b": "DAMO VILAB Text-to-Video MS 1.7B (text-to-video generation model)",
 }
 
 
