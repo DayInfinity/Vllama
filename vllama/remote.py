@@ -227,6 +227,160 @@ print("Image generation done. Output saved to result.png")
         shutil.rmtree(kernel_dir, ignore_errors=True)    
 
 
+# Run Video Kaggle
+def run_video_kaggle(model_name, prompt, output_dir):
+    credentials_path = os.path.expanduser("~/.kaggle/kaggle.json")
+    if not os.path.exists(credentials_path) and not (
+        os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY")
+    ):
+        print("Error: Kaggle API credentials not found. Please set up your kaggle API token in ~/.kaggle/kaggle.json.")
+        return 
+    
+    try:
+        subprocess.run(["kaggle", "--version"], stdout=subprocess.DEVNULL, check=True)
+    except FileNotFoundError:
+        print("Error: Kaggle CLI is not installed. Please install it with 'pip install kaggle'.")
+        return
+
+    username = None
+    if os.path.exists(credentials_path):
+        try:
+            with open(credentials_path, "r") as f:
+                creds = json.load(f)
+                username = creds.get("username")
+        except Exception:
+            username = None
+
+    if not username:
+        username = os.environ.get("KAGGLE_USERNAME")
+    if not username:
+        print("Error: Could not determine Kaggle username from credentials.")
+        return
+
+    # 2. Prepare a temporary directory with the kernel script and metadata
+    kernel_dir = tempfile.mkdtemp(prefix="vllama_kaggle_")
+    try:
+        # Write the Kaggle kernel script that installs dependencies and runs the model
+        script_path = os.path.join(kernel_dir, "vllama_kernel.py")
+        model_str = json.dumps(model_name)    # safely quote the model string
+        prompt_str = json.dumps(prompt)     # safely quote the prompt string
+        script_code = f"""
+import subprocess
+# Install required packages inside Kaggle (quietly, without cache to speed up start)
+subprocess.run(
+    ["pip", "uninstall", "-y", "jax", "jaxlib", "flax"],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+)
+subprocess.run(['pip', 'install', '--no-cache-dir', 'diffusers[torch]==0.20.2',
+                'transformers==4.33.0', 'accelerate==0.22.0', 'xformers==0.0.20','protobuf==3.20.3', 'huggingface-hub==0.25.2' , '--quiet'])
+from diffusers import StableDiffusionPipeline
+import torch
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers.utils import export_to_video
+pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype = torch.float16, variant = "fp16")
+pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+pipe.enable_model_cpu_offload()
+pipe.to('cuda')
+prompt = {prompt_str}
+video_frames = pipe(prompt, num_inference_steps = 200).frames
+import numpy as np
+import imageio
+def export_to_video(video_frames, output_path="output.mp4", fps=8):
+   # unwrap if needed: (1,16,256,256,3) -> (16,256,256,3)
+   if len(video_frames) == 1 and video_frames[0].ndim == 4:
+       video_frames = video_frames[0]
+   frames = []
+   for frame in video_frames:
+       # Convert float32 [0,1] -> uint8 [0,255]
+       if frame.dtype != np.uint8:
+           frame = (255 * np.clip(frame, 0, 1)).astype(np.uint8)
+       frames.append(frame)
+   imageio.mimsave(output_path, frames, fps=fps, quality=8)
+   return output_path
+
+# ---- usage ----
+# unwrap manually before passing
+video_frames = video_frames[0]   # (16,256,256,3)
+print(video_frames.shape)        # should print (16,256,256,3)
+video_path = export_to_video(video_frames, "my_video.mp4")
+print("Video saved at:", video_path)
+"""
+        with open(script_path, 'w') as f:
+            f.write(script_code.strip() + "\n")
+
+        # Write kernel-metadata.json for Kaggle
+        kernel_slug = "vllama-" + model_name.replace('/', '-')
+        # Sanitize slug to meet Kaggle requirements (alphanumeric and hyphens)
+        kernel_slug = "".join(ch if ch.isalnum() or ch == '-' else '-' for ch in kernel_slug.lower())
+        if len(kernel_slug) > 50:  # slug length limit (if any)
+            kernel_slug = kernel_slug[:50]
+        title = "vllama " + model_name.replace('/', ' ')
+        metadata = {
+            "id": f"{username}/{kernel_slug}",
+            "title": title,
+            "code_file": os.path.basename(script_path),
+            "language": "python",
+            "kernel_type": "script",
+            "is_private": "true",
+            "enable_gpu": "true",
+            "enable_internet": "true",
+            "dataset_sources": [],
+            "competition_sources": [],
+            "kernel_sources": [],
+            "model_sources": []
+        }
+        meta_path = os.path.join(kernel_dir, "kernel-metadata.json")
+        with open(meta_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+
+        # 3. Push the kernel to Kaggle and trigger execution
+        print(f"Pushing Kaggle kernel (model: {model_name})...")
+        result = subprocess.run(["kaggle", "kernels", "push", "-p", kernel_dir], capture_output=True, text=True)
+        if result.returncode != 0:
+            print("Failed to push Kaggle kernel. Error output:")
+            print(result.stderr or result.stdout)
+            return
+        print("Kernel pushed successfully. Kaggle is running the kernel...")
+
+        # 4. Poll Kaggle for kernel status until it finishes
+        kernel_ref = f"{username}/{kernel_slug}"
+        start_time = time.time()
+        timestamp = int(time.time())
+        while True:
+            time.sleep(5)  # wait 5 seconds between status checks
+            status_res = subprocess.run(["kaggle", "kernels", "status", kernel_ref], capture_output=True, text=True)
+            status_text = (status_res.stdout or "") + (status_res.stderr or "")
+            status_lower = status_text.lower()
+            if "complete" in status_lower:
+                print("Kaggle kernel execution completed.")
+                break
+            if "error" in status_lower or "failed" in status_lower:
+                print("Kaggle kernel execution failed. Please check the Kaggle notebook for errors.")
+                return
+            if time.time() - start_time > 900:  # timeout after 5 minutes
+                print("Timed out waiting for Kaggle kernel to complete.")
+                return
+
+        # 5. Download the generated image from Kaggle
+        os.makedirs(output_dir, exist_ok=True)
+        print(f"Downloading output to {output_dir}...")
+        out_res = subprocess.run(["kaggle", "kernels", "output", kernel_ref, "-p", output_dir],
+                                 capture_output=True, text=True)
+        if out_res.returncode != 0:
+            print("Error downloading output from Kaggle:")
+            print(out_res.stderr or out_res.stdout)
+        else:
+            video_path = os.path.join(output_dir, f"vllama_kaggle_{timestamp}.png")
+            if os.path.exists(video_path):
+                print(f"videeo successfully downloaded to {video_path}")
+            else:
+                print("video output downloaded to the specified directory.")
+    finally:
+        # Clean up the temporary kernel files
+        shutil.rmtree(kernel_dir, ignore_errors=True)    
+
+
 # Logout
 def logout():
     """Logout from the current service (e.g., clear Kaggle credentials)."""
