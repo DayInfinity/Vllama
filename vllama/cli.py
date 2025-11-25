@@ -32,6 +32,13 @@ def main():
     run_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     run_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
+    run_video_parser = subaparsers.add_parser("run_video", help="To generate video using prompt")
+    run_video_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
+    run_video_parser.add_argument("--prompt", "-p", help="Text prompt for generation. If not provided, enters interactive mode.")
+    run_video_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
+    run_video_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
+
+    
     post_parser = subparsers.add_parser("post", help="Send a prompt to a running model session")
     post_parser.add_argument("prompt", help="Prompt text to send to the model")
     post_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
@@ -88,6 +95,25 @@ def main():
         else:
             core.run_model(model_name, prompt, output_dir)
 
+    elif args.command == "run_video":
+        model_name = args.model
+        prompt = args.prompt
+        output_dir = args.output_dir or "."
+        service = args.service
+        if service and service.lower() == "kaggle":
+            if not prompt:
+                try:
+                    prompt = input("Enter a prompt for image generation: ")
+                except KeyboardInterrupt:
+                    print("\nGeneration cancelled by user.")
+                    sys.exit(0)
+                if not prompt:
+                    print("No prompt provided. Exiting.")
+                    sys.exit(0)
+            remote.run_video_kaggle(model_name, prompt, output_dir)
+        else:
+            core.run_video_model(model_name, prompt, output_dir)
+    
     elif args.command == "post":
         prompt = args.prompt
         output_dir = args.output_dir or "."
