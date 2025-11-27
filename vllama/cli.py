@@ -2,12 +2,16 @@ import argparse
 import sys
 from vllama import core, model_training, remote, preprocess
 import os
+from importlib.metadata import version as pkg_version
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 def main():
     parser = argparse.ArgumentParser(prog="vllama", description="vllama CLI - manage and run vision models locally or on the cloud GPUs")
+    
+    parser.add_argument("--version", "-v", action = "version", version = f"%(prog)s {pkg_version('vllama')}")
+    
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     login_parser = subparsers.add_parser("login", help="Login to a GPU service (e.g., Kaggle, Colab)")
