@@ -30,6 +30,9 @@ def main():
     install_parser = subparsers.add_parser("install", help="Install/download a model")
     install_parser.add_argument("model", help="Name of the model to install (eg., stabilityai/sd-turbo)")
 
+    uninstall_parser = subparsers.add_parser("uninstall", help="Uninstall/remove a model")
+    uninstall_parser.add_argument("model", help="Name of the model to uninstall (eg., stabilityai/sd-turbo)")
+
     run_parser = subparsers.add_parser("run", help="Run a model to generate outputs")
     run_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
     run_parser.add_argument("--prompt", "-p", help="Text prompt for generation. If not provided, enters interactive mode.")
@@ -79,6 +82,10 @@ def main():
     elif args.command == "install":
         model_name = args.model
         core.install_model(model_name)
+        
+    elif args.command == "uninstall":
+        model_name = args.model
+        core.uninstall_model(model_name)
 
     elif args.command == "run":
         model_name = args.model
