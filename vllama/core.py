@@ -1,6 +1,7 @@
 import os, time
 import torch
 from diffusers import StableDiffusionPipeline
+from huggingface_hub import scan_cache_dir
 
 
 _pipeline = None
@@ -30,6 +31,41 @@ def install_model(model_name:str):
         print(f"Model '{model_name}' downloaded successfully.")
     except Exception as e:
         print(f"Error downloading model {model_name}: {e}")
+
+
+# Uninstall model from cache
+def uninstall_model(model_name: str):
+    """Remove a previously downloaded model from the local Hugging Face cache."""
+    print(f"Uninstalling model '{model_name}'...")
+
+    cache_info = scan_cache_dir()
+
+    # Find all cached repos matching this model id (e.g. "stabilityai/sd-turbo")
+    matching_repos = [r for r in cache_info.repos if r.repo_id == model_name]
+
+    if not matching_repos:
+        print(f"Model '{model_name}' was not found in the local cache.")
+        return
+
+    # Collect all revision hashes for this repo
+    revision_hashes = []
+    for repo in matching_repos:
+        for rev in repo.revisions:
+            revision_hashes.append(rev.commit_hash)
+
+    if not revision_hashes:
+        print(f"No cached revisions found for '{model_name}'.")
+        return
+
+    # Plan deletion and show how much space we’ll free
+    delete_strategy = cache_info.delete_revisions(*revision_hashes)
+    if delete_strategy.expected_freed_size == 0:
+        print(f"No files to delete for '{model_name}'.")
+        return
+
+    print(f"Freeing {delete_strategy.expected_freed_size_str} of disk space...")
+    delete_strategy.execute()
+    print(f"Model '{model_name}' removed from local Hugging Face cache.")
 
 
 # Run Model
