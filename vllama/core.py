@@ -1,7 +1,10 @@
-import os, time
+import os
+import time
 import torch
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionPipeline, DiffusionPipeline, DPMSolverMultistepScheduler
 from huggingface_hub import scan_cache_dir
+import numpy as np
+import imageio
 
 
 _pipeline = None
@@ -119,7 +122,7 @@ def run_model(model_name: str, prompt: str = None, output_dir: str = "."):
             try:
                 _pipeline.enable_xformers_memory_efficient_attention()
             except Exception as e:
-                pass
+                print(f"Failed to enable xformers memory efficient attention: {e}")
         
         _pipeline.enable_attention_slicing()
         _pipeline.enable_vae_tiling()
@@ -152,6 +155,165 @@ def run_model(model_name: str, prompt: str = None, output_dir: str = "."):
             # Optionally, unload the model from memory if needed
             # _pipeline = None
             print("Interactive session ended.")
+
+
+# Run Video Model
+def run_video_model(model_name: str, prompt: str = None, output_dir: str = "."):
+    """Run the specified video model. If prompt is given, generate a video for it.
+    If prompt is None, enter interactive mode to accept prompts repeatedly.
+    """
+    global _pipeline
+
+    if torch.cuda.is_available():
+        props = torch.cuda.get_device_properties(0)
+        vram_gb = props.total_memory / (1024 ** 3)
+        print(f"CUDA device: {props.name}, VRAM: {vram_gb:.2f} GB")
+
+        if vram_gb <= 3:
+            device = "cuda"
+            dtype = torch.float32
+            fp = "fp32"
+            low_vram = True
+        else:
+            device = "cuda"
+            dtype = torch.float16
+            fp = "fp16"
+            low_vram = False
+        print("CUDA device detected. Using GPU for inference.")
+    else:
+        device = "cpu"
+        dtype = torch.float32
+        fp = "fp32"
+        low_vram = True
+        print("No CUDA device detected. Using CPU for inference (may be slow).")
+
+
+    # Load the model pipeline if not already loaded or if a different model is requested
+    if _pipeline is None or getattr(_pipeline, 'model_name', None) != model_name:
+        print(f"Loading model '{model_name}' on {device} with dtype = {dtype} ...")
+        try:
+            _pipeline = DiffusionPipeline.from_pretrained(
+                model_name,
+                torch_dtype=dtype,
+                variant = fp,
+                safety_checker=None,
+            )
+        except Exception as e:
+            print(f"Failed to load model {model_name}: {e}")
+            return
+        # Move pipeline to GPU if available
+        # if torch.cuda.is_available():
+        #     _pipeline = _pipeline.to("cuda")
+        _pipeline.scheduler = DPMSolverMultistepScheduler.from_config(_pipeline.scheduler.config)
+        _pipeline = _pipeline.to(device)
+        _pipeline.low_vram = low_vram
+
+        if device == "cuda":
+            try:
+                _pipeline.enable_xformers_memory_efficient_attention()
+            except Exception as e:
+                print(f"Failed to enable xformers memory efficient attention: {e}")
+                pass
+
+        if hasattr(_pipeline, "enable_attention_slicing"):
+            _pipeline.enable_attention_slicing()
+        if hasattr(_pipeline, "enable_vae_tiling"):
+            _pipeline.enable_vae_tiling()
+
+        # Store model_name as an attribute for reference (not a built-in property of pipeline, we add it)
+        _pipeline.model_name = model_name
+        print(f"Model loaded. (Model: {model_name})")
+
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
+    if prompt is not None:
+        # Single prompt mode
+        _generate_video(prompt, output_dir)
+    else:
+        # Interactive mode
+        print("Entering interactive prompt mode. Type 'exit' or 'quit' to stop.")
+        try:
+            while True:
+                user_input = input("Prompt> ")
+                if user_input.strip().lower() in {"exit", "quit"}:
+                    break
+                if user_input.strip() == "":
+                    continue  # skip empty prompts
+                _generate_video(user_input, output_dir)
+        except KeyboardInterrupt:
+            # Handle Ctrl+C gracefully
+            print("\nSession terminated by user.")
+        finally:
+            # Optionally, unload the model from memory if needed
+            # _pipeline = None
+            print("Interactive session ended.")
+
+
+# Generate Video
+def _generate_video(prompt: str, output_dir: str):
+    """Helper to generate a video from the global pipeline and save to output_dir."""
+    global _pipeline
+    if _pipeline is None:
+        print("Error: No model loaded.")
+        return
+    print(f"Generating video for prompt: \"{prompt}\"...")
+
+    steps = 60
+
+    low_vram = getattr(_pipeline, 'low_vram', False)
+
+    if not low_vram:
+        steps = 200
+        print("High VRAM mode: using maximum inference steps for quality.")
+
+    result = _pipeline(
+        prompt,
+        num_inference_steps=steps,
+        guidance_scale=7.5,
+        height=512,
+        width=512,
+    )
+    frames = result.frames
+
+    if hasattr(result, "frames"):
+        frames = result.frames
+    elif isinstance(result, (list, tuple)):
+        frames = result
+    elif isinstance(result, dict) and "frames" in result:
+        frames = result["frames"]
+    else:
+        print(f"Unexpected pipeline output type: {type(result)}")
+        return
+
+    if not frames:
+        print("Error: pipeline returned 0 frames.")
+        return
+
+    print("Number of frames:", len(frames))
+    print("Single frame shape:", np.array(frames[0]).shape)
+
+    video_path = export_to_video(frames, os.path.join(output_dir, "result.mp4"))
+    print("Video saved at:", video_path)
+
+# Export to Video
+def export_to_video(frames, output_path="output.mp4", fps=8):
+    out = []
+    for frame in frames:
+        f = np.array(frame)
+        # f should now be (H, W, 3)
+        if f.dtype != np.uint8:
+            f = (255 * np.clip(f, 0, 1)).astype(np.uint8)
+        out.append(f)
+
+    imageio.mimsave(
+        output_path,
+        out,
+        fps=fps,
+        quality=8,
+        macro_block_size=1,  # avoid the resizing warning
+    )
+    return output_path
 
 
 # Generate Image
