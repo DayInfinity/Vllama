@@ -27,6 +27,9 @@ def main():
     show_parser = subparsers.add_parser("show", help="Show available models")
     show_parser.add_argument("models", nargs='?', const="models", help="(Usage: vllama show models)")
 
+    list_parser = subparsers.add_parser("list", help="List all installed models")
+    list_parser.add_argument("models", nargs='?', const="models", help="(Usage: vllama list models)")
+
     install_parser = subparsers.add_parser("install", help="Install/download a model")
     install_parser.add_argument("model", help="Name of the model to install (eg., stabilityai/sd-turbo)")
 
@@ -77,7 +80,10 @@ def main():
         remote.init_gpu(service)
 
     elif args.command == "show":
-        core.list_models()
+        core.show_models()
+
+    elif args.command == "list":
+        core.list_downloads()
 
     elif args.command == "install":
         model_name = args.model

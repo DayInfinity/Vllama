@@ -3,6 +3,7 @@ import time
 import torch
 from diffusers import StableDiffusionPipeline, DiffusionPipeline, DPMSolverMultistepScheduler
 from huggingface_hub import scan_cache_dir
+from huggingface_hub.constants import HF_HUB_CACHE
 import numpy as np
 import imageio
 
@@ -16,12 +17,46 @@ _SUPPORTED_MODELS = {
 }
 
 
-# List Models
-def list_models():
+# Show available Models
+def show_models():
     """List available models for installation."""
     print("Supported models:")
     for name, desc in _SUPPORTED_MODELS.items():
         print(f"- {name}: {desc}")
+
+
+def _get_hf_cache_dir() -> str:
+    """
+    Resolve the Hugging Face cache dir, respecting env vars if set.
+    """
+    env_cache = os.getenv("HUGGINGFACE_HUB_CACHE") or os.getenv("HF_HOME")
+    if env_cache:
+        return env_cache
+    return HF_HUB_CACHE
+
+
+def list_downloads():
+    """
+    List all Hugging Face *model* repos that are already downloaded
+    in the local cache (including Stable Diffusion models).
+    """
+    try:
+        cache_dir = _get_hf_cache_dir()
+        cache_info = scan_cache_dir(cache_dir=cache_dir)
+    except Exception as e:
+        print(f"Error scanning local Hugging Face cache: {e}")
+        return
+
+    # Collect only model repos (ignoring datasets/spaces)
+    models = sorted({repo.repo_id for repo in cache_info.repos if repo.repo_type == "model"})
+
+    if not models:
+        print("No downloaded models found in the local Hugging Face cache.")
+        return
+
+    print("Downloaded models in Hugging Face cache:")
+    for m in models:
+        print(f" - {m}")
 
 
 # Install Model
