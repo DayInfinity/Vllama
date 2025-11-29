@@ -129,6 +129,13 @@ def run_model(model_name: str, prompt: str = None, output_dir: str = "."):
             low_vram = False
         
         print("CUDA device detected. Using GPU for inference.")
+
+    elif torch.backends.mps.is_available():
+        device = "mps"
+        dtype = torch.float32
+        low_vram = False
+        print("MPS device detected. Using GPU for inference.")
+
     else:
         device = "cpu"
         dtype = torch.float32
@@ -215,6 +222,14 @@ def run_video_model(model_name: str, prompt: str = None, output_dir: str = "."):
             fp = "fp16"
             low_vram = False
         print("CUDA device detected. Using GPU for inference.")
+
+    elif torch.backends.mps.is_available():
+        device = "mps"
+        dtype = torch.float32
+        fp = "fp16"
+        low_vram = False
+        print("MPS device detected. Using GPU for inference.")
+
     else:
         device = "cpu"
         dtype = torch.float32
@@ -368,9 +383,6 @@ def _generate_image(prompt: str, output_dir: str):
 
     low_vram = getattr(_pipeline, 'low_vram', False)
     model_name = getattr(_pipeline, 'model_name', '')
-    if "sd-turbo" in model_name:
-        steps = 40
-        guidance = 5.0
 
     if low_vram:
         steps = min(steps, 30)
@@ -378,6 +390,12 @@ def _generate_image(prompt: str, output_dir: str):
         height = width = 512
         if "sd-turbo" in model_name:
             guidance = 5
+
+    elif torch.backends.mps.is_available():
+        steps = 200
+        height = width = 512
+        guidance = 7.5
+        print("MPS device detected. Using GPU for inference.")
 
     # if torch.cuda.is_available():
     #     vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
