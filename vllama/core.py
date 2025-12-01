@@ -5,7 +5,11 @@ from diffusers import StableDiffusionPipeline, DiffusionPipeline, DPMSolverMulti
 from huggingface_hub import scan_cache_dir
 from huggingface_hub.constants import HF_HUB_CACHE
 import numpy as np
+import requests
 import imageio
+from flask import Flask, request, jsonify
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
 
 
 _pipeline = None
@@ -346,6 +350,128 @@ def _generate_video(prompt: str, output_dir: str):
     video_path = export_to_video(frames, os.path.join(output_dir, "result.mp4"))
     print("Video saved at:", video_path)
 
+
+# Run Local LLM
+def run_local_llm(
+    model_name: str = "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+    host: str = "0.0.0.0",
+    port: int = 2513,
+):
+    """
+    Download the specified LLM and run it as a local REST API server.
+
+    - Supports any HF chat/instruct model that has a chat template (Qwen, Llama, etc).
+    - Keeps conversation history on the server side.
+    - Exposes POST /chat with JSON: { "message": "<user text>" }.
+    """
+
+    # Choose dtype based on GPU availability (float16 on GPU, float32 on CPU)
+    if torch.cuda.is_available():
+        dtype = torch.float16
+    else:
+        dtype = torch.float32  # safer for CPU
+
+    print(f"Loading model '{model_name}'... (first time will download weights)")
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        torch_dtype=dtype,
+        device_map="auto",  # use GPU if available, else CPU
+    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model.eval()
+
+    # 2. Flask web server
+    
+    app = Flask(__name__)
+
+    SYSTEM_PROMPT = "You are a helpful, honest coding assistant."
+    # Chat history as a list of {role, content}
+    conversation = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+    ]
+
+    def build_prompt():
+        """
+        Build the text prompt for the current conversation using the model's
+        chat template if available; otherwise fall back to a simple format.
+        """
+        # If the tokenizer knows how to build chat prompts, use that
+        if hasattr(tokenizer, "apply_chat_template") and tokenizer.chat_template:
+            return tokenizer.apply_chat_template(
+                conversation,
+                tokenize=False,
+                add_generation_prompt=True,  # add assistant turn at end
+            )
+
+        # Fallback: simple generic prompt format
+        lines = []
+        for msg in conversation:
+            role = msg["role"]
+            content = msg["content"]
+            if role == "system":
+                lines.append(f"SYSTEM: {content}")
+            elif role == "user":
+                lines.append(f"USER: {content}")
+            elif role == "assistant":
+                lines.append(f"ASSISTANT: {content}")
+        # Add a final assistant prefix
+        lines.append("ASSISTANT:")
+        return "\n".join(lines)
+
+    @app.route("/chat", methods=["POST"])
+    def chat():
+        nonlocal conversation
+        data = request.get_json(force=True) or {}
+        user_message = data.get("message", "")
+
+        if not isinstance(user_message, str) or not user_message.strip():
+            return jsonify(error="No 'message' provided or message is empty"), 400
+
+        print("\n=== New Chat Request ===")
+        print(f"User: {user_message}")
+
+        # Append new user turn
+        conversation.append({"role": "user", "content": user_message})
+
+        # Build prompt for this turn
+        prompt_text = build_prompt()
+        inputs = tokenizer(prompt_text, return_tensors="pt")
+        input_ids = inputs["input_ids"].to(model.device)
+        attention_mask = inputs["attention_mask"].to(model.device)
+
+        print(">>> Calling model.generate()...")
+        with torch.no_grad():
+            output_ids = model.generate(
+                input_ids,
+                attention_mask=attention_mask,
+                max_new_tokens=2048,
+                pad_token_id=tokenizer.eos_token_id,
+                eos_token_id=tokenizer.eos_token_id,
+                do_sample=True,
+                temperature=0.7,
+                top_p=0.9,
+            )
+        print(">>> model.generate() finished.")
+
+        # Only decode the new tokens (beyond the prompt)
+        generated_ids = output_ids[0][input_ids.shape[-1] :]
+        assistant_reply = tokenizer.decode(
+            generated_ids,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=True,
+        ).strip()
+
+        print(f"LLM: {assistant_reply}\n")
+
+        # Append assistant turn to conversation for future context
+        conversation.append({"role": "assistant", "content": assistant_reply})
+
+        return jsonify({"response": assistant_reply})
+
+    print(f"Model loaded. Serving at http://{host}:{port}/chat")
+    app.run(host=host, port=port)
+
+
 # Export to Video
 def export_to_video(frames, output_path="output.mp4", fps=8):
     out = []
@@ -429,7 +555,6 @@ def _generate_image(prompt: str, output_dir: str):
         print(f"Could not save image: {e}")
 
 
-
 # Send Prompt
 def send_prompt(prompt: str, output_dir: str = "."):
     """Send a prompt to an already running model (expects _pipeline to be loaded)."""
@@ -438,6 +563,35 @@ def send_prompt(prompt: str, output_dir: str = "."):
     else:
         os.makedirs(output_dir, exist_ok=True)
         _generate_image(prompt, output_dir)
+
+
+# Chat with Local LLM
+def chat_with_local_llm(host: str = "http://127.0.0.1", port: int = 2513):
+    url = f"{host}:{port}/chat"
+    print("Connected to local LLM. Type 'exit' or 'quit' to stop.\n")
+    while True:
+        try:
+            msg = input("You: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\nExiting chat.")
+            break
+
+        if not msg:
+            continue
+        if msg.lower() in {"exit", "quit"}:
+            print("Exiting chat.")
+            break
+
+        try:
+            r = requests.post(url, json={"message": msg}, timeout=300)
+            r.raise_for_status()
+            data = r.json()
+            reply = data.get("response", "").strip()
+        except Exception as e:
+            print(f"[Error] {e}")
+            continue
+
+        print(f"LLM: {reply}\n")
 
 
 # Stop Session
