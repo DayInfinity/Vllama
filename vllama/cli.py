@@ -48,6 +48,11 @@ def main():
     run_video_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     run_video_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
+
+    run_llm_parser = subparsers.add_parser("run_llm", help="Run a local LLM model to generate text outputs")
+    run_llm_parser.add_argument("model", help="Name of the LLM model to run locally (must be installed or accessible)")
+
+    chat_llm_parser = subparsers.add_parser("chat_llm", help="Chat with a local LLM model interactively")
     
     post_parser = subparsers.add_parser("post", help="Send a prompt to a running model session")
     post_parser.add_argument("prompt", help="Prompt text to send to the model")
@@ -130,6 +135,13 @@ def main():
             remote.run_video_kaggle(model_name, prompt, output_dir)
         else:
             core.run_video_model(model_name, prompt, output_dir)
+
+    elif args.command == "run_llm":
+        model_name = args.model
+        core.run_local_llm(model_name)
+
+    elif args.command == "chat_llm":
+        core.chat_with_local_llm()
     
     elif args.command == "post":
         prompt = args.prompt
