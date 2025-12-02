@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  vllama:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vllama-app
+    
+    # Mount volumes for data persistence
+    volumes:
+      # Mount local data directory
+      - ./data:/app/data
+      # Mount outputs directory
+      - ./outputs:/app/outputs
+      # Mount models directory for caching downloaded models
+      - ./models:/app/models
+      # Mount Kaggle credentials if using remote execution
+      - ~/.kaggle:/root/.kaggle:ro
+    
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_CPP_MIN_LOG_LEVEL=3
+      - TF_ENABLE_ONEDNN_OPTS=0
+    
+    # Uncomment below for GPU support (requires nvidia-docker)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Resource limits
+    mem_limit: 8g
+    cpus: 4
+
+# Volumes for persistent data
+volumes:
+  data:
+  outputs:
+  models:
