@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="vllama",
-    version="0.7.1",
+    version="0.7.2",
     author="Gopu Manvith",
     description="CLI tool to download and run vision models (like Stable Diffusion) on local and cloud GPUs",
     packages=["vllama"],
@@ -27,6 +27,7 @@ setuptools.setup(
         "imageio>=2.31.0",
         "build==1.3.0",
         "twine",
+        "flask"
     ],
     entry_points={
         "console_scripts": [
