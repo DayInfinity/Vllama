@@ -52,7 +52,7 @@ def list_downloads():
         return
 
     # Collect only model repos (ignoring datasets/spaces)
-    models = sorted({repo.repo_id for repo in cache_info.repos if repo.repo_type == "model"})
+    models = sorted({repo for repo in cache_info.repos if repo.repo_type == "model"})
 
     if not models:
         print("No downloaded models found in the local Hugging Face cache.")
@@ -60,7 +60,7 @@ def list_downloads():
 
     print("Downloaded models in Hugging Face cache:")
     for m in models:
-        print(f" - {m}")
+        print(f" - {m.repo_id} ---  size: {m.size_on_disk/(1024**3):.2f} GB")
 
 
 # Install Model
