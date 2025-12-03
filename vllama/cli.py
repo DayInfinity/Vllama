@@ -54,6 +54,9 @@ def main():
 
     chat_llm_parser = subparsers.add_parser("chat_llm", help="Chat with a local LLM model interactively")
     
+    tts_parser = subparsers.add_parser("tts", help="Convert text to speech using local TTS engine")
+    tts_parser.add_argument("--text", help="Text to convert to speech")
+
     post_parser = subparsers.add_parser("post", help="Send a prompt to a running model session")
     post_parser.add_argument("prompt", help="Prompt text to send to the model")
     post_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
@@ -143,6 +146,10 @@ def main():
     elif args.command == "chat_llm":
         core.chat_with_local_llm()
     
+    elif args.command == "tts":
+        text = args.text
+        core.text_to_speech(text = text)
+
     elif args.command == "post":
         prompt = args.prompt
         output_dir = args.output_dir or "."
