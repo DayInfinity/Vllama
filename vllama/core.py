@@ -594,6 +594,41 @@ def chat_with_local_llm(host: str = "http://127.0.0.1", port: int = 2513):
         print(f"LLM: {reply}\n")
 
 
+# Text to Speech 
+def text_to_speech(text: str = None):
+    """Convert the given text to speech using pyttsx3."""
+    try:
+        import pyttsx3
+    except ImportError:
+        print("pyttsx3 is not installed. Please install it to use text-to-speech functionality.")
+        return
+
+    engine = pyttsx3.init()
+    
+    while True:
+        if text is None:
+            try:
+                text = input("Enter text to convert to speech (or 'exit' to quit): ")     
+            except (KeyboardInterrupt, EOFError):
+                print("\nExiting text-to-speech.")
+                return
+            if text.strip().lower() in {"exit", "quit"}:
+                print("Exiting text-to-speech.")
+                return
+            if not text.strip():
+                continue
+            engine.say(text)
+            engine.runAndWait()
+            text = None
+        else:
+            if text.strip().lower() in {"exit", "quit"}:
+                print("Exiting text-to-speech.")
+                return
+            engine.say(text)
+            engine.runAndWait()
+            return
+
+
 # Stop Session
 def stop_session():
     """Stop the currently running model session, if any."""
