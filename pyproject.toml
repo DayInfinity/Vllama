@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vllama"
-version = "0.8.0"
+version = "0.8.1"
 description = "CLI tool to run local vision models like stabilityai/sd-turbo"
 authors = [
   { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
@@ -32,6 +32,8 @@ dependencies = [
   "twine",
   "flask",
   "pyttsx3",
+  "SpeechRecognition",
+  "pyaudio",
 ]
 
 [project.scripts]

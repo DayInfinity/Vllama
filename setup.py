@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="vllama",
-    version="0.8.0",
+    version="0.8.1",
     author="Gopu Manvith",
     description="CLI tool to download and run vision models (like Stable Diffusion) on local and cloud GPUs",
     packages=["vllama"],
@@ -29,6 +29,8 @@ setuptools.setup(
         "twine",
         "flask",
         "pyttsx3",
+        "SpeechRecognition",
+        "pyaudio",
     ],
     entry_points={
         "console_scripts": [
