@@ -629,6 +629,37 @@ def text_to_speech(text: str = None):
             return
 
 
+# Speech to Text
+def speech_to_text():
+    """Convert speech from microphone to text using SpeechRecognition."""
+    try:
+        import speech_recognition as sr
+    except ImportError:
+        print("SpeechRecognition is not installed. Please install it to use speech-to-text functionality.")
+        return
+
+    recognizer = sr.Recognizer()
+    microphone = sr.Microphone()
+
+    while True:
+        print("Listening... (say 'exit' to quit)")
+        with microphone as source:
+            recognizer.adjust_for_ambient_noise(source)
+            audio = recognizer.listen(source)
+
+        try:
+            
+            text = recognizer.recognize_google(audio)
+            print(f"You said: {text}")
+            if text.strip().lower() in {"exit", "quit"}:
+                print("Exiting speech-to-text.")
+                return
+        except sr.UnknownValueError:
+            print("Sorry, I could not understand the audio.")
+        except sr.RequestError as e:
+            print(f"Could not request results; {e}")
+
+
 # Stop Session
 def stop_session():
     """Stop the currently running model session, if any."""
