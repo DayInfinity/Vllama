@@ -4,13 +4,39 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vllama"
-version = "0.8.1"
-description = "CLI tool to run local vision models like stabilityai/sd-turbo"
+version = "0.9.0"
+description = "Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs"
 authors = [
   { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
 ]
 readme = "README.md"
+license = { text = "Apache-2.0" }
 requires-python = ">=3.8"
+keywords = [
+  "machine-learning",
+  "deep-learning",
+  "computer-vision",
+  "stable-diffusion",
+  "automl",
+  "data-preprocessing",
+  "llm",
+  "vscode-extension",
+  "kaggle",
+  "gpu"
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
   "torch>=2.0.0",
   "diffusers>=0.20.0",
@@ -36,5 +62,13 @@ dependencies = [
   "pyaudio",
 ]
 
+[project.urls]
+Homepage = "https://github.com/ManvithGopu13/Vllama"
+Documentation = "https://github.com/ManvithGopu13/Vllama#readme"
+Repository = "https://github.com/ManvithGopu13/Vllama"
+Issues = "https://github.com/ManvithGopu13/Vllama/issues"
+Changelog = "https://github.com/ManvithGopu13/Vllama/blob/main/CHANGELOG.md"
+
 [project.scripts]
 vllama = "vllama.cli:main"
+

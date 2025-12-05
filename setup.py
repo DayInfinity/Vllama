@@ -1,10 +1,23 @@
 import setuptools
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setuptools.setup(
     name="vllama",
-    version="0.8.1",
+    version="0.9.0",
     author="Gopu Manvith",
-    description="CLI tool to download and run vision models (like Stable Diffusion) on local and cloud GPUs",
+    author_email="manvithgopu1394@gmail.com",
+    description="Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/ManvithGopu13/Vllama",
+    project_urls={
+        "Bug Tracker": "https://github.com/ManvithGopu13/Vllama/issues",
+        "Documentation": "https://github.com/ManvithGopu13/Vllama#readme",
+        "Source Code": "https://github.com/ManvithGopu13/Vllama",
+    },
+    license="Apache-2.0",
     packages=["vllama"],
     python_requires=">=3.8",
     install_requires=[
@@ -36,5 +49,17 @@ setuptools.setup(
         "console_scripts": [
             "vllama = vllama.cli:main"
         ]
-    }
+    },
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    ],
 )
