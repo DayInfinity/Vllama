@@ -6,9 +6,9 @@ Use this section to tell people about which versions of your project are current
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.3.x   | :white_check_mark: |
-| 0.2.x   | :x:                |
-| < 0.2   | :x:                |
+| 0.9.x   | :white_check_mark: |
+| 0.8.x   | :x:                |
+| < 0.8   | :x:                |
 
 ## Reporting a Vulnerability
 
