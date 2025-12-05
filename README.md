@@ -1,39 +1,81 @@
 # Vllama: Vision Models Made Easy 🚀
 
-Vllama is a comprehensive CLI tool that simplifies working with vision models and machine learning workflows. Whether you're preprocessing datasets, training models with AutoML, or generating images with state-of-the-art diffusion models, Vllama makes it easy - locally or on cloud GPUs.
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Version](https://img.shields.io/badge/version-0.9.0-green.svg)](https://github.com/ManvithGopu13/Vllama)
+
+Vllama is a comprehensive toolkit that simplifies working with vision models, machine learning workflows, and local LLMs. Whether you're preprocessing datasets, training models with AutoML, generating images with state-of-the-art diffusion models, or chatting with local language models directly in VS Code, Vllama makes it easy - locally or on cloud GPUs.
 
 ---
 
 ## ✨ Key Features
 
+### 🤖 CLI Tool
 - **🔧 Autonomous Data Preprocessing**: Intelligent data cleaning, encoding, scaling, and feature selection
-- **🤖 AutoML Training**: Train and compare multiple ML models automatically with hyperparameter tuning
-- **🎨 Vision Model Inference**: Generate images using pre-trained diffusion models (Stable Diffusion, SD-Turbo)
+- **🏆 AutoML Training**: Train and compare multiple ML models automatically with hyperparameter tuning
+- **🎨 Image Generation**: Generate images using pre-trained diffusion models (Stable Diffusion, SD-Turbo)
+- **🎬 Video Generation**: Create videos from text prompts using text-to-video models
+- **🤖 Local LLM Server**: Run language models locally as REST API servers
+- **💬 CLI Chat**: Interactive chat with local LLMs directly from terminal
+- **🔊 Text-to-Speech**: Convert text to speech using local TTS engine
+- **🎤 Speech-to-Text**: Convert speech to text using local STT engine
 - **☁️ Cloud GPU Integration**: Seamlessly offload computation to Kaggle GPUs
 - **📊 Rich Visualizations**: Automatic generation of insights, correlations, and performance metrics
 - **💾 Smart Output Management**: Organized folder structure with logs, models, and visualizations
+
+### 🆚 VS Code Extension
+- **💬 Chat with Local LLMs**: Direct integration with VS Code's native "Chat with AI" interface
+- **🔌 Local-First**: Connect to LLMs running on your machine (e.g., `localhost:2513`)
+- **⚡ Zero Configuration**: Works seamlessly with locally hosted language models
+- **🎯 Native Experience**: Fully integrated into VS Code's chat panel
+- **🔮 Future Ready**: Built to support agentic tools and advanced features
 
 ---
 
 ## 📦 Installation
 
-### 1. Clone the Repository
+### CLI Tool Installation
+
+#### 1. Clone the Repository
 ```bash
 git clone https://github.com/ManvithGopu13/Vllama.git
 cd Vllama
 ```
 
-### 2. Install Dependencies
+#### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Install Vllama CLI
+#### 3. Install Vllama CLI
 ```bash
 pip install -e .
 ```
 
 Now you can use `vllama` from anywhere in your terminal!
+
+### VS Code Extension Installation
+
+The Vllama VS Code extension allows you to chat with local LLMs directly from VS Code's Chat interface.
+
+#### Prerequisites
+- VS Code (latest version recommended)
+- A locally running LLM server (e.g., on `localhost:2513`)
+
+#### Installation Steps
+1. Download the Vllama extension from the VS Code Marketplace (or install from `.vsix` file)
+2. Open VS Code
+3. Go to Extensions (Ctrl+Shift+X / Cmd+Shift+X)
+4. Search for "Vllama" or install the downloaded `.vsix` file
+5. Reload VS Code
+
+#### Usage
+1. Ensure your local LLM server is running on the configured port (default: `localhost:2513`)
+2. Open VS Code's Chat panel (View → Chat with AI)
+3. Select your local LLM model from the model dropdown
+4. Start chatting with your local language model!
+
+**Note**: The extension integrates seamlessly with VS Code's native chat interface, providing a familiar experience while maintaining complete privacy with your local LLM.
 
 ---
 
@@ -263,6 +305,44 @@ vllama run stabilityai/sd-turbo --service kaggle --prompt "A dragon flying"
 vllama run stabilityai/sd-turbo -p "A forest" -o ./my_images
 ```
 
+#### `vllama run_video`
+Generate videos from text prompts.
+
+```bash
+vllama run_video <model_name> [--prompt <text>] [--service <service>] [--output_dir <dir>]
+```
+
+**Examples:**
+```bash
+# Generate video locally
+vllama run_video damo-vilab/text-to-video-ms-1.7b --prompt "A cat playing piano"
+
+# Generate video on Kaggle GPU
+vllama run_video damo-vilab/text-to-video-ms-1.7b --service kaggle --prompt "A sunset over ocean"
+
+# Interactive mode
+vllama run_video damo-vilab/text-to-video-ms-1.7b
+```
+
+#### `vllama list`
+List all installed/downloaded models.
+
+```bash
+vllama list models
+```
+
+#### `vllama uninstall`
+Remove a downloaded model from cache.
+
+```bash
+vllama uninstall <model_name>
+```
+
+**Example:**
+```bash
+vllama uninstall stabilityai/sd-turbo
+```
+
 #### `vllama post`
 Send a prompt to an already running model session.
 
@@ -280,6 +360,111 @@ Stop the currently running model session.
 
 ```bash
 vllama stop
+```
+
+---
+
+### Local LLM Commands
+
+#### `vllama run_llm`
+Run a local LLM as a REST API server.
+
+```bash
+vllama run_llm <model_name>
+```
+
+**What it does:**
+- Downloads and loads the specified HuggingFace LLM
+- Starts a Flask server on `localhost:2513`
+- Provides a `/chat` endpoint for conversation
+- Maintains conversation history
+- Compatible with VS Code extension
+
+**Examples:**
+```bash
+# Run Qwen model (default)
+vllama run_llm Qwen/Qwen2.5-Coder-0.5B-Instruct
+
+# Run Llama model
+vllama run_llm meta-llama/Llama-2-7b-chat-hf
+
+# Run any HuggingFace chat model
+vllama run_llm microsoft/DialoGPT-medium
+```
+
+**API Usage:**
+```bash
+# Send message via curl
+curl -X POST http://localhost:2513/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello, how are you?"}'
+```
+
+**Note:** This is the server that the VS Code extension connects to by default.
+
+#### `vllama chat_llm`
+Interactive chat with a local LLM via CLI.
+
+```bash
+vllama chat_llm
+```
+
+**What it does:**
+- Connects to a running LLM server (started with `run_llm`)
+- Provides interactive chat interface in terminal
+- Maintains conversation context
+- Type `exit` or `quit` to stop
+
+**Example:**
+```bash
+# Terminal 1: Start LLM server
+vllama run_llm Qwen/Qwen2.5-Coder-0.5B-Instruct
+
+# Terminal 2: Start chat
+vllama chat_llm
+# You> Write a Python function to reverse a string
+# Assistant> Here's a function to reverse a string...
+```
+
+---
+
+### Speech Commands
+
+#### `vllama tts`
+Convert text to speech using local TTS engine.
+
+```bash
+vllama tts --text <text>
+```
+
+**Examples:**
+```bash
+# Speak text
+vllama tts --text "Hello, this is a test of text to speech"
+
+# Interactive mode (no --text flag)
+vllama tts
+# Enter text: Hello world
+```
+
+#### `vllama stt`
+Convert speech to text using microphone input.
+
+```bash
+vllama stt
+```
+
+**What it does:**
+- Listens to microphone input
+- Converts speech to text using Google Speech Recognition
+- Prints transcribed text
+
+**Example:**
+```bash
+vllama stt
+# Listening... Speak now!
+# [You speak: "Hello world"]
+# Transcribed: Hello world
 ```
 
 ---
@@ -361,6 +546,41 @@ vllama run stabilityai/sd-turbo --service kaggle --prompt "A magical forest"
 # Image will be downloaded automatically
 ```
 
+### Workflow 4: Local LLM Server & CLI Chat
+```bash
+# 1. Start local LLM server
+vllama run_llm Qwen/Qwen2.5-Coder-0.5B-Instruct
+
+# 2. In another terminal, start CLI chat
+vllama chat_llm
+
+# 3. Chat interactively
+# You> Write a function to calculate fibonacci
+# Assistant> Here's a function...
+```
+
+### Workflow 5: Chat with Local LLM in VS Code
+```bash
+# 1. Start Vllama LLM server
+vllama run_llm Qwen/Qwen2.5-Coder-0.5B-Instruct
+
+# 2. Open VS Code with Vllama extension installed
+
+# 3. Open Chat with AI panel (View → Chat with AI)
+
+# 4. Select your local model and start chatting!
+```
+
+### Workflow 6: Video Generation
+```bash
+# 1. Generate video locally
+vllama run_video damo-vilab/text-to-video-ms-1.7b --prompt "A cat playing piano"
+
+# 2. Or use Kaggle GPU for faster processing
+vllama run_video damo-vilab/text-to-video-ms-1.7b --service kaggle --prompt "A sunset"
+
+```
+
 ---
 
 ## 📊 Understanding Outputs
@@ -422,6 +642,9 @@ KAGGLE_KEY=your_api_key
 
 # Model Cache Directory (optional)
 HF_HOME=/path/to/cache
+
+# Hugging Face Access Token (for gated models)
+HF_TOKEN=your_huggingface_token
 ```
 
 ### GPU Optimization
@@ -433,15 +656,61 @@ Vllama automatically optimizes for your GPU:
 
 ---
 
+## 🔄 Recent Updates
+
+### Version 0.9.0 (Latest)
+- 🆚 **VS Code Extension**: Added support for chatting with local LLMs directly from VS Code
+- 📄 **License Change**: Migrated from GPL-3.0 to Apache-2.0 for greater flexibility
+- 📚 **Documentation**: Comprehensive README updates with all features and workflows
+- 🤝 **Open Source**: Prepared project for public open source release
+- 🔒 **Security**: Enhanced security documentation and best practices
+
+### Version 0.8.1
+- 🎨 Added support for Stable Diffusion Turbo
+- ☁️ Improved Kaggle GPU integration
+- 🔧 Bug fixes and performance improvements
+
+### Version 0.7.0
+- 🤖 AutoML training with hyperparameter tuning
+- 📊 Enhanced visualization outputs
+- 🔄 Better data preprocessing pipeline
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+### Quick Start for Contributors
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [GNU General Public License v3.0](LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).
+
+```
+Copyright 2025 Gopu Manvith
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
 
 ---
 
@@ -470,12 +739,21 @@ vllama run model --service kaggle --prompt "your prompt"
 vllama data --path data.csv --target your_column_name
 ```
 
+**Issue: "VS Code extension can't connect to local LLM"**
+```bash
+# Solution: Ensure your LLM server is running
+# 1. Check that the server is running on the correct port (default: localhost:2513)
+# 2. Verify firewall settings allow local connections
+# 3. Check VS Code extension settings for the correct endpoint
+```
+
 ---
 
 ## 📞 Support
 
 - **Documentation**: [GitHub Repository](https://github.com/ManvithGopu13/Vllama)
 - **Issues**: [GitHub Issues](https://github.com/ManvithGopu13/Vllama/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/ManvithGopu13/Vllama/discussions)
 - **Email**: manvithgopu1394@gmail.com
 
 ---
@@ -483,12 +761,42 @@ vllama data --path data.csv --target your_column_name
 ## 🌟 Acknowledgments
 
 Built with:
-- [PyTorch](https://pytorch.org/)
-- [Hugging Face Diffusers](https://huggingface.co/docs/diffusers)
-- [Scikit-learn](https://scikit-learn.org/)
-- [XGBoost](https://xgboost.readthedocs.io/), [LightGBM](https://lightgbm.readthedocs.io/), [CatBoost](https://catboost.ai/)
-- [Kaggle API](https://github.com/Kaggle/kaggle-api)
+- [PyTorch](https://pytorch.org/) - Deep learning framework
+- [Hugging Face Diffusers](https://huggingface.co/docs/diffusers) - State-of-the-art diffusion models
+- [Scikit-learn](https://scikit-learn.org/) - Machine learning library
+- [XGBoost](https://xgboost.readthedocs.io/), [LightGBM](https://lightgbm.readthedocs.io/), [CatBoost](https://catboost.ai/) - Gradient boosting frameworks
+- [Kaggle API](https://github.com/Kaggle/kaggle-api) - Cloud GPU integration
+- [Flask](https://flask.palletsprojects.com/) - Web framework for API endpoints
+- [VS Code Extension API](https://code.visualstudio.com/api) - VS Code extension development
+
+---
+
+## 🗺️ Roadmap
+
+### Upcoming Features
+- [ ] Support for more vision models (DALL-E, Midjourney-style models)
+- [ ] Advanced agentic tools for VS Code extension
+- [ ] Web UI for model training and inference
+- [ ] Multi-GPU support for distributed training
+- [ ] Integration with more cloud GPU providers
+- [ ] Real-time model fine-tuning capabilities
+- [ ] Support for video generation models
+- [ ] Enhanced chat capabilities with RAG (Retrieval-Augmented Generation)
+
+### Long-term Vision
+- Build a comprehensive AI toolkit that works seamlessly across local and cloud environments
+- Enable developers to easily integrate state-of-the-art AI models into their workflows
+- Create a vibrant community of contributors and users
+- Support the latest research in generative AI and machine learning
+
+---
+
+## ⭐ Star History
+
+If you find Vllama useful, please consider giving it a star on GitHub! It helps others discover the project.
 
 ---
 
 **Made with ❤️ by Gopu Manvith**
+
+[⬆ Back to top](#vllama-vision-models-made-easy-)
