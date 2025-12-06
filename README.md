@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-0.9.0-green.svg)](https://github.com/ManvithGopu13/Vllama)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/DayInfinity/Vllama)
 
 Vllama is a comprehensive toolkit that simplifies working with vision models, machine learning workflows, and local LLMs. Whether you're preprocessing datasets, training models with AutoML, generating images with state-of-the-art diffusion models, or chatting with local language models directly in VS Code, Vllama makes it easy - locally or on cloud GPUs.
 
@@ -38,7 +38,7 @@ Vllama is a comprehensive toolkit that simplifies working with vision models, ma
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/ManvithGopu13/Vllama.git
+git clone https://github.com/DayInfinity/Vllama.git
 cd Vllama
 ```
 
@@ -658,7 +658,7 @@ Vllama automatically optimizes for your GPU:
 
 ## 🔄 Recent Updates
 
-### Version 0.9.0 (Latest)
+### Version 1.0.0 (Latest)
 - 🆚 **VS Code Extension**: Added support for chatting with local LLMs directly from VS Code
 - 📄 **License Change**: Migrated from GPL-3.0 to Apache-2.0 for greater flexibility
 - 📚 **Documentation**: Comprehensive README updates with all features and workflows
@@ -751,9 +751,9 @@ vllama data --path data.csv --target your_column_name
 
 ## 📞 Support
 
-- **Documentation**: [GitHub Repository](https://github.com/ManvithGopu13/Vllama)
-- **Issues**: [GitHub Issues](https://github.com/ManvithGopu13/Vllama/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/ManvithGopu13/Vllama/discussions)
+- **Documentation**: [GitHub Repository](https://github.com/DayInfinity/Vllama)
+- **Issues**: [GitHub Issues](https://github.com/DayInfinity/Vllama/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/DayInfinity/Vllama/discussions)
 - **Email**: manvithgopu1394@gmail.com
 
 ---
