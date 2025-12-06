@@ -5,17 +5,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="vllama",
-    version="0.9.0",
+    version="1.0.0",
     author="Gopu Manvith",
     author_email="manvithgopu1394@gmail.com",
     description="Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ManvithGopu13/Vllama",
+    url="https://github.com/DayInfinity/Vllama",
     project_urls={
-        "Bug Tracker": "https://github.com/ManvithGopu13/Vllama/issues",
-        "Documentation": "https://github.com/ManvithGopu13/Vllama#readme",
-        "Source Code": "https://github.com/ManvithGopu13/Vllama",
+        "Bug Tracker": "https://github.com/DayInfinity/Vllama/issues",
+        "Documentation": "https://github.com/DayInfinity/Vllama#readme",
+        "Source Code": "https://github.com/DayInfinity/Vllama",
     },
     license="Apache-2.0",
     packages=["vllama"],

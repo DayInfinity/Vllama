@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vllama"
-version = "0.9.0"
+version = "1.0.0"
 description = "Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs"
 authors = [
   { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
@@ -63,11 +63,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ManvithGopu13/Vllama"
-Documentation = "https://github.com/ManvithGopu13/Vllama#readme"
-Repository = "https://github.com/ManvithGopu13/Vllama"
-Issues = "https://github.com/ManvithGopu13/Vllama/issues"
-Changelog = "https://github.com/ManvithGopu13/Vllama/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/DayInfinity/Vllama"
+Documentation = "https://github.com/DayInfinity/Vllama#readme"
+Repository = "https://github.com/DayInfinity/Vllama"
+Issues = "https://github.com/DayInfinity/Vllama/issues"
+Changelog = "https://github.com/DayInfinity/Vllama/blob/main/CHANGELOG.md"
 
 [project.scripts]
 vllama = "vllama.cli:main"
