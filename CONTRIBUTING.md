@@ -11,7 +11,7 @@ This project and everyone participating in it is governed by the [Vllama Code of
 1.  **Fork the Repository**: Click the "Fork" button on the GitHub page.
 2.  **Clone Locally**:
     ```bash
-    git clone https://github.com/YOUR_USERNAME/Vllama.git
+    git clone https://github.com/DayInfinity/Vllama.git
     cd Vllama
     ```
 3.  **Set Up Environment**:

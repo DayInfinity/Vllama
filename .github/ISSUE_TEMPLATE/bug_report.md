@@ -25,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 **Environment (please complete the following information):**
  - OS: [e.g. Windows, macOS, Linux]
  - Python Version: [e.g. 3.8, 3.10]
- - Vllama Version: [e.g. 0.9.0]
+ - Vllama Version: [e.g. 1.0.0]
  - GPU (if applicable): [e.g. NVIDIA RTX 3060]
 
 **Additional context**
