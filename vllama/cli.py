@@ -56,6 +56,8 @@ def main():
     
     tts_parser = subparsers.add_parser("tts", help="Convert text to speech using local TTS engine")
     tts_parser.add_argument("--text", help="Text to convert to speech")
+    tts_parser.add_argument("--model", help="TTS model to use")
+    tts_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
 
     stt_parser = subparsers.add_parser("stt", help="Convert speech to text using local STT engine")
 
@@ -150,7 +152,9 @@ def main():
     
     elif args.command == "tts":
         text = args.text
-        core.text_to_speech(text = text)
+        model_id = args.model or "microsoft/speecht5_tts"
+        output_dir = args.output_dir or "."
+        core.interactive_text_to_speech(text = text, model_id = model_id, output_dir = output_dir)
 
     elif args.command == "stt":
         core.speech_to_text()

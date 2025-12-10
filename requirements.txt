@@ -25,3 +25,5 @@ flash
 pyttsx3
 SpeechRecognition
 pyaudio
+soundfile
+regex
