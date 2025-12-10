@@ -8,7 +8,9 @@ import numpy as np
 import requests
 import imageio
 from flask import Flask, request, jsonify
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
+import soundfile as sf
+import re
 
 
 
@@ -627,6 +629,91 @@ def text_to_speech(text: str = None):
             engine.say(text)
             engine.runAndWait()
             return
+
+
+# Interactive Text to Speech
+def interactive_text_to_speech(text: str = None, model_id: str = "microsoft/speecht5_tts", output_dir: str = "."):
+    while True:
+        if text is None:
+            try:
+                text = input("Enter text to convert to speech (or 'exit' to quit): ")     
+            except (KeyboardInterrupt, EOFError):
+                print("\nExiting text-to-speech.")
+                return
+            if text.strip().lower() in {"exit", "quit"}:
+                print("Exiting text-to-speech.")
+                return
+            if not text.strip():
+                continue
+            text_to_speech_model(text = text, model_id = model_id, output_dir = output_dir)
+            text = None
+        else:
+            if text.strip().lower() in {"exit", "quit"}:
+                print("Exiting text-to-speech.")
+                return
+            text_to_speech_model(text = text, model_id = model_id, output_dir = output_dir)
+            return
+
+
+# Split Text into Chunks
+def split_text(text, max_chars=450):
+    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+    chunks = []
+    current = ""
+
+    for s in sentences:
+        if len(current) + len(s) <= max_chars:
+            current += " " + s
+        else:
+            chunks.append(current.strip())
+            current = s
+    if current:
+        chunks.append(current.strip())
+
+    return chunks
+
+
+# Text to Speech model
+def text_to_speech_model(text: str = "Hello, World!", model_id: str = "microsoft/speecht5_tts", output_dir="."):
+    # Load components
+    processor = SpeechT5Processor.from_pretrained(model_id)
+    model = SpeechT5ForTextToSpeech.from_pretrained(model_id)
+    vocoder = SpeechT5HifiGan.from_pretrained("microsoft/speecht5_hifigan")
+
+    speaker_embedding = torch.tensor(np.random.randn(1, 512), dtype=torch.float32)
+
+    # Split into safe chunks
+    chunks = split_text(text)
+    print("Chunks:", len(chunks))
+
+    all_audio = []
+
+    for i, chunk in enumerate(chunks):
+        print(f"Processing chunk {i+1}/{len(chunks)}...")
+
+        inputs = processor(text=chunk, return_tensors="pt")
+
+        with torch.no_grad():
+            spectrogram = model.generate_speech(
+                input_ids=inputs["input_ids"],
+                speaker_embeddings=speaker_embedding,
+            )
+
+        with torch.no_grad():
+            audio = vocoder(spectrogram)
+
+        audio = audio.squeeze().cpu().numpy()
+        all_audio.append(audio)
+
+    # Combine audio parts
+    final_audio = np.concatenate(all_audio)
+
+    timestamp = int(time.time())
+    output_path = f"{output_dir}/output_{timestamp}.wav"
+
+    sf.write(output_path, final_audio, 16000)
+    print("Saved output.wav")
+    return output_path
 
 
 # Speech to Text
