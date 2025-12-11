@@ -60,7 +60,10 @@ def main():
     tts_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
 
     stt_parser = subparsers.add_parser("stt", help="Convert speech to text using local STT engine")
-
+    stt_parser.add_argument("--path", help="Path to the audio file for transcription")
+    stt_parser.add_argument("--model", help="STT model to use")
+    stt_parser.add_argument("--language", help="Language of the audio for better transcription")
+    
     post_parser = subparsers.add_parser("post", help="Send a prompt to a running model session")
     post_parser.add_argument("prompt", help="Prompt text to send to the model")
     post_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
@@ -157,7 +160,10 @@ def main():
         core.interactive_text_to_speech(text = text, model_id = model_id, output_dir = output_dir)
 
     elif args.command == "stt":
-        core.speech_to_text()
+        path = args.path
+        model_id = args.model or "openai/whisper-small"
+        language = args.language or "en"
+        core.transcribe_from_path(path=path, model_id=model_id, language=language)
 
     elif args.command == "post":
         prompt = args.prompt
