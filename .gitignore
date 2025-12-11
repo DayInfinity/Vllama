@@ -170,3 +170,5 @@ kaggle.json
 catboost_info
 
 commands.txt
+*.wav 
+*.mp3
