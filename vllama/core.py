@@ -52,8 +52,11 @@ def list_downloads():
         return
 
     # Collect only model repos (ignoring datasets/spaces)
-    models = sorted({repo for repo in cache_info.repos if repo.repo_type == "model"})
-
+    models = sorted(
+        (repo for repo in cache_info.repos if repo.repo_type == "model"),
+        key=lambda r: r.repo_id
+    )
+    
     if not models:
         print("No downloaded models found in the local Hugging Face cache.")
         return

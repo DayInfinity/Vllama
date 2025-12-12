@@ -5,4 +5,4 @@ if __name__ == "__main__":
     # text_to_speech()
     # text_to_speech("exit")
 
-    speech_to_text()
+    list_downloads()
