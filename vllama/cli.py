@@ -64,6 +64,12 @@ def main():
     stt_parser.add_argument("--model", help="STT model to use")
     stt_parser.add_argument("--language", help="Language of the audio for better transcription")
     
+    translation_parser = subparsers.add_parser("translate", help = "Translate text using local translation model")
+    translation_parser.add_argument("--model", help = "Model used for translation")
+    translation_parser.add_argument("--text", help = "Text to translate")
+    translation_parser.add_argument("--src", help = "Source language code (e.g., 'en' for English)")
+    translation_parser.add_argument("--tgt", help = "Target language code (e.g., 'fr' for French)")
+
     post_parser = subparsers.add_parser("post", help="Send a prompt to a running model session")
     post_parser.add_argument("prompt", help="Prompt text to send to the model")
     post_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
@@ -164,6 +170,13 @@ def main():
         model_id = args.model or "openai/whisper-small"
         language = args.language or "en"
         core.transcribe_from_path(path=path, model_id=model_id, language=language)
+
+    elif args.command == "translate":
+        text = args.text
+        model_id = args.model or 'facebook/nllb-200-distilled-600M'
+        source_language = args.src or 'en'
+        target_language = args.tgt or 'de'
+        core.translate_fast(text = text, model_id = model_id, input_lang = source_language, output_lang = target_language)
 
     elif args.command == "post":
         prompt = args.prompt
