@@ -42,6 +42,12 @@ def main():
     run_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     run_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
+    detect_image_parser = subparsers.add_parser("detect_image", help="Run object detection on an image using YOLO model")
+    detect_image_parser.add_argument("--path", help="Path to the input image file")
+    detect_image_parser.add_argument("--url", help="URL of the input image file (if not using local path)")
+    detect_image_parser.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
+    detect_image_parser.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
+
     run_video_parser = subparsers.add_parser("run_video", help="To generate video using prompt")
     run_video_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
     run_video_parser.add_argument("--prompt", "-p", help="Text prompt for generation. If not provided, enters interactive mode.")
@@ -132,6 +138,13 @@ def main():
             remote.run_kaggle(model_name, prompt, output_dir)
         else:
             core.run_model(model_name, prompt, output_dir)
+
+    elif args.command == "detect_image":
+        path = args.path
+        url = args.url
+        model_id = args.model
+        output_dir = args.output_dir or "."
+        core.object_detection_image(path = path, url = url, model_id = model_id, output_dir = output_dir)
 
     elif args.command == "run_video":
         model_name = args.model

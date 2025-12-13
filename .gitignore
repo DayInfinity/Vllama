@@ -172,3 +172,4 @@ catboost_info
 commands.txt
 *.wav 
 *.mp3
+*.pt

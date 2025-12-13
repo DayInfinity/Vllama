@@ -27,3 +27,9 @@ SpeechRecognition
 pyaudio
 soundfile
 regex
+
+# Object Detection Libraries
+ultralytics
+opencv-python
+requests
+lap
