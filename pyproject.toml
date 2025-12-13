@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vllama"
-version = "1.1.0"
+version = "1.2.0"
 description = "Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs"
 authors = [
   { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
@@ -62,6 +62,10 @@ dependencies = [
   "pyaudio",
   "soundfile",
   "regex",
+  "ultralytics",
+  "opencv-python",
+  "requests",
+  "lap",
 ]
 
 [project.urls]
