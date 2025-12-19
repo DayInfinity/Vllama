@@ -3,6 +3,9 @@ import sys
 from vllama import core, model_training, remote, preprocess
 import os
 from importlib.metadata import version as pkg_version
+from .functions.object_detection_video.object_detection_video import (
+    object_detection_video
+)
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -47,6 +50,11 @@ def main():
     detect_image_parser.add_argument("--url", help="URL of the input image file (if not using local path)")
     detect_image_parser.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
     detect_image_parser.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
+
+    detect_video_parser = subparsers.add_parser("detect_video", help="Run object detection on a video using YOLO model")
+    detect_video_parser.add_argument("--path", help="Path to the input video file")
+    detect_video_parser.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
+    detect_video_parser.add_argument("--output_dir", "-o", help="Directory to save output video with detections (default: current directory)")
 
     run_video_parser = subparsers.add_parser("run_video", help="To generate video using prompt")
     run_video_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
@@ -145,6 +153,12 @@ def main():
         model_id = args.model
         output_dir = args.output_dir or "."
         core.object_detection_image(path = path, url = url, model_id = model_id, output_dir = output_dir)
+
+    elif args.command == "detect_video":
+        path = args.path
+        model_id = args.model
+        output_dir = args.output_dir or "."
+        object_detection_video(video_path = path, model_id = model_id, output_dir = output_dir)
 
     elif args.command == "run_video":
         model_name = args.model

@@ -1,11 +1,12 @@
 import setuptools
+from setuptools import find_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="vllama",
-    version="1.2.1",
+    version="1.3.0",
     author="Gopu Manvith",
     author_email="manvithgopu1394@gmail.com",
     description="Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs",
@@ -18,7 +19,7 @@ setuptools.setup(
         "Source Code": "https://github.com/DayInfinity/Vllama",
     },
     license="Apache-2.0",
-    packages=["vllama"],
+    packages=find_packages(),
     python_requires=">=3.8",
     install_requires=[
         "argparse",
