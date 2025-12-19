@@ -28,7 +28,7 @@ class AutonomousDataPreprocessor:
         dataset_path: str,
         test_size: float = 0.2,
         random_state: int = 42,
-        target_column: str | None = None,
+        target_column: str = None,
         output_dir: str = "."
     ):
         self.dataset_path = dataset_path
@@ -37,15 +37,15 @@ class AutonomousDataPreprocessor:
         self.target_column = target_column
         self.user_specified_target = target_column is not None
 
-        self.df: pd.DataFrame | None = None
-        self.original_shape: tuple[int, int] | None = None
+        self.df: pd.DataFrame = None
+        self.original_shape: tuple[int, int] = None
 
         self.numerical_columns: list[str] = []
         self.categorical_columns: list[str] = []
 
         self.encoders: dict[str, LabelEncoder] = {}
-        self.target_encoder: LabelEncoder | None = None
-        self.scaler: RobustScaler | None = None
+        self.target_encoder: LabelEncoder = None
+        self.scaler: RobustScaler = None
 
         self.log: list[dict] = []
         self.output_folder = f"{output_dir}/output_folder_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -679,7 +679,7 @@ def autonomous_data_preprocessing(
     dataset_path: str,
     test_size: float = 0.2,
     random_state: int = 42,
-    target_column: str | None = None,
+    target_column: str = None,
     output_dir: str = "."
 ) -> bool:
     agent = AutonomousDataPreprocessor(
