@@ -6,6 +6,7 @@ from importlib.metadata import version as pkg_version
 from .functions.object_detection_video.object_detection_video import (
     object_detection_video
 )
+from .functions.image3d.image3d import image_to_3d
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -192,6 +193,14 @@ def main():
 
     elif args.command == "chat_llm":
         core.chat_with_local_llm()
+
+    elif args.command == "image3d":
+        path = args.path
+        url = args.url
+        model_id = args.model
+        output_dir = args.output_dir or "."
+        image_to_3d(path = path, url = url, model_id = model_id, output_dir = output_dir)
+
     
     elif args.command == "tts":
         text = args.text
