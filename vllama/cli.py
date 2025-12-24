@@ -63,6 +63,13 @@ def main():
     run_video_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
 
+    image_to_3d_parser = subaparsers.add_parser("image3d", help="To generate 3d ply files from image path inputs")
+    image_to_3d_parse.add_argument("--path", help="Path to the input image file")
+    image_to_3d_parse.add_argument("--url", help="URL of the input image file (if not using local path)")
+    image_to_3d_parse.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
+    image_to_3d_parse.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
+
+
     run_llm_parser = subparsers.add_parser("run_llm", help="Run a local LLM model to generate text outputs")
     run_llm_parser.add_argument("model", help="Name of the LLM model to run locally (must be installed or accessible)")
 
