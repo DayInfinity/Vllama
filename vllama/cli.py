@@ -6,7 +6,8 @@ from importlib.metadata import version as pkg_version
 from .functions.object_detection_video.object_detection_video import (
     object_detection_video
 )
-from .functions.image3d.image3d import image_to_3d
+# from .functions.image3d.image3d import image_to_3d
+from .functions.image3d.image3dRemote import run_kaggle_image_to_3d
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -64,11 +65,12 @@ def main():
     run_video_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
 
-    image_to_3d_parser = subaparsers.add_parser("image3d", help="To generate 3d ply files from image path inputs")
-    image_to_3d_parse.add_argument("--path", help="Path to the input image file")
-    image_to_3d_parse.add_argument("--url", help="URL of the input image file (if not using local path)")
-    image_to_3d_parse.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
-    image_to_3d_parse.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
+    image_to_3d_parser = subparsers.add_parser("image3d", help="To generate 3d ply files from image path inputs")
+    image_to_3d_parser.add_argument("--path", "-p", help="Path to the input image file")
+    image_to_3d_parser.add_argument("--url", help="URL of the input image file (if not using local path)")
+    image_to_3d_parser.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
+    image_to_3d_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
+    image_to_3d_parser.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
 
 
     run_llm_parser = subparsers.add_parser("run_llm", help="Run a local LLM model to generate text outputs")
@@ -199,7 +201,12 @@ def main():
         url = args.url
         model_id = args.model
         output_dir = args.output_dir or "."
-        image_to_3d(path = path, url = url, model_id = model_id, output_dir = output_dir)
+        service = args.service
+        if service and service.lower() == "kaggle":
+            run_kaggle_image_to_3d(image_path = path, output_dir = output_dir)
+        else:
+            print("Running 3D model generation locally not implemented yet. Offloading to Kaggle is the only supported option currently.")
+            # image_to_3d(path = path, url = url, model_id = model_id, output_dir = output_dir)
 
     
     elif args.command == "tts":
