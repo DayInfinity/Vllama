@@ -8,6 +8,7 @@ from .functions.object_detection_video.object_detection_video import (
 )
 # from .functions.image3d.image3d import image_to_3d
 from .functions.image3d.image3dRemote import run_kaggle_image_to_3d
+from .functions.viewer3d.viewer3d import view_3d_model
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -29,17 +30,22 @@ def main():
     init_parser.add_argument("gpu", choices=["gpu"], help="Keyword 'gpu' (to initialize a GPU runtime)")
     init_parser.add_argument("--service", choices=["kaggle", "colab"], required=True, help="Service to initialize the GPU on")
 
+
     show_parser = subparsers.add_parser("show", help="Show available models")
     show_parser.add_argument("models", nargs='?', const="models", help="(Usage: vllama show models)")
+
 
     list_parser = subparsers.add_parser("list", help="List all installed models")
     list_parser.add_argument("models", nargs='?', const="models", help="(Usage: vllama list models)")
 
+
     install_parser = subparsers.add_parser("install", help="Install/download a model")
     install_parser.add_argument("model", help="Name of the model to install (eg., stabilityai/sd-turbo)")
 
+
     uninstall_parser = subparsers.add_parser("uninstall", help="Uninstall/remove a model")
     uninstall_parser.add_argument("model", help="Name of the model to uninstall (eg., stabilityai/sd-turbo)")
+
 
     run_parser = subparsers.add_parser("run", help="Run a model to generate outputs")
     run_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
@@ -47,16 +53,19 @@ def main():
     run_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     run_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (default: current directory)")
 
+
     detect_image_parser = subparsers.add_parser("detect_image", help="Run object detection on an image using YOLO model")
     detect_image_parser.add_argument("--path", help="Path to the input image file")
     detect_image_parser.add_argument("--url", help="URL of the input image file (if not using local path)")
     detect_image_parser.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
     detect_image_parser.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
 
+
     detect_video_parser = subparsers.add_parser("detect_video", help="Run object detection on a video using YOLO model")
     detect_video_parser.add_argument("--path", help="Path to the input video file")
     detect_video_parser.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
     detect_video_parser.add_argument("--output_dir", "-o", help="Directory to save output video with detections (default: current directory)")
+
 
     run_video_parser = subparsers.add_parser("run_video", help="To generate video using prompt")
     run_video_parser.add_argument("model", help="Name of the model to run (must be installed or accessible)")
@@ -73,34 +82,46 @@ def main():
     image_to_3d_parser.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
 
 
+    view3d_parser = subparsers.add_parser("view3d", help="View 3D model files (PLY, GLB, OBJ, STL, FBX)")
+    view3d_parser.add_argument("--path", "-p", help="Path to the 3D model file to view")
+
+
     run_llm_parser = subparsers.add_parser("run_llm", help="Run a local LLM model to generate text outputs")
     run_llm_parser.add_argument("model", help="Name of the LLM model to run locally (must be installed or accessible)")
 
+
     chat_llm_parser = subparsers.add_parser("chat_llm", help="Chat with a local LLM model interactively")
-    
+
+
     tts_parser = subparsers.add_parser("tts", help="Convert text to speech using local TTS engine")
     tts_parser.add_argument("--text", help="Text to convert to speech")
     tts_parser.add_argument("--model", help="TTS model to use")
     tts_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
 
+
     stt_parser = subparsers.add_parser("stt", help="Convert speech to text using local STT engine")
     stt_parser.add_argument("--path", help="Path to the audio file for transcription")
     stt_parser.add_argument("--model", help="STT model to use")
     stt_parser.add_argument("--language", help="Language of the audio for better transcription")
-    
+
+
     translation_parser = subparsers.add_parser("translate", help = "Translate text using local translation model")
     translation_parser.add_argument("--model", help = "Model used for translation")
     translation_parser.add_argument("--text", help = "Text to translate")
     translation_parser.add_argument("--src", help = "Source language code (e.g., 'en' for English)")
     translation_parser.add_argument("--tgt", help = "Target language code (e.g., 'fr' for French)")
 
+
     post_parser = subparsers.add_parser("post", help="Send a prompt to a running model session")
     post_parser.add_argument("prompt", help="Prompt text to send to the model")
     post_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
 
+
     stop_parser = subparsers.add_parser("stop", help="Stop the running model session")
 
+
     logout_parser = subparsers.add_parser("logout", help="Logout from the current service")
+
 
     data_parser = subparsers.add_parser("data", help="Dataset cleaning and processing")
     data_parser.add_argument("--path", help="Path to the dataset")
@@ -108,11 +129,14 @@ def main():
     data_parser.add_argument("--test_size", "-t", help="Test-train split")
     data_parser.add_argument("--output_dir", "-o", help="Directory to save output (if applicable)")
 
+
     train_parser = subparsers.add_parser("train", help="AutoML model training on processed data")
     train_parser.add_argument("--path", "-p", help="Path to the datasets folder, woth train_data.csv and test_data.csv")
     train_parser.add_argument("--target", "-t", help="Target Column")
 
+
     args = parser.parse_args()
+
 
     if args.command == "login":
         service = args.service
@@ -120,23 +144,29 @@ def main():
         key = args.key
         remote.login(service, username, key)
 
+
     elif args.command == "init":
         service = args.service
         remote.init_gpu(service)
 
+
     elif args.command == "show":
         core.show_models()
+
 
     elif args.command == "list":
         core.list_downloads()
 
+
     elif args.command == "install":
         model_name = args.model
         core.install_model(model_name)
-        
+
+
     elif args.command == "uninstall":
         model_name = args.model
         core.uninstall_model(model_name)
+
 
     elif args.command == "run":
         model_name = args.model
@@ -157,6 +187,7 @@ def main():
         else:
             core.run_model(model_name, prompt, output_dir)
 
+
     elif args.command == "detect_image":
         path = args.path
         url = args.url
@@ -164,11 +195,13 @@ def main():
         output_dir = args.output_dir or "."
         core.object_detection_image(path = path, url = url, model_id = model_id, output_dir = output_dir)
 
+
     elif args.command == "detect_video":
         path = args.path
         model_id = args.model
         output_dir = args.output_dir or "."
         object_detection_video(video_path = path, model_id = model_id, output_dir = output_dir)
+
 
     elif args.command == "run_video":
         model_name = args.model
@@ -189,12 +222,15 @@ def main():
         else:
             core.run_video_model(model_name, prompt, output_dir)
 
+
     elif args.command == "run_llm":
         model_name = args.model
         core.run_local_llm(model_name)
 
+
     elif args.command == "chat_llm":
         core.chat_with_local_llm()
+
 
     elif args.command == "image3d":
         path = args.path
@@ -208,18 +244,25 @@ def main():
             print("Running 3D model generation locally not implemented yet. Offloading to Kaggle is the only supported option currently.")
             # image_to_3d(path = path, url = url, model_id = model_id, output_dir = output_dir)
 
-    
+
+    elif args.command == "view3d":
+        model_path = args.path
+        view_3d_model(model_path=model_path)
+
+
     elif args.command == "tts":
         text = args.text
         model_id = args.model or "microsoft/speecht5_tts"
         output_dir = args.output_dir or "."
         core.interactive_text_to_speech(text = text, model_id = model_id, output_dir = output_dir)
 
+
     elif args.command == "stt":
         path = args.path
         model_id = args.model or "openai/whisper-small"
         language = args.language or "en"
         core.transcribe_from_path(path=path, model_id=model_id, language=language)
+
 
     elif args.command == "translate":
         text = args.text
@@ -228,16 +271,20 @@ def main():
         target_language = args.tgt or 'de'
         core.translate_fast(text = text, model_id = model_id, input_lang = source_language, output_lang = target_language)
 
+
     elif args.command == "post":
         prompt = args.prompt
         output_dir = args.output_dir or "."
         core.send_prompt(prompt, output_dir)
 
+
     elif args.command == "stop":
         core.stop_session()
 
+
     elif args.command == "logout":
         remote.logout()
+
 
     elif args.command == "data":
         path = args.path
@@ -246,10 +293,12 @@ def main():
         output_dir = args.output_dir or "."
         preprocess.autonomous_data_preprocessing(dataset_path = path, test_size=test_size,target_column = target, output_dir = output_dir)
 
+
     elif args.command == "train":
         path = args.path
         target_column = args.target
         model_training.run_automl_training(data_dir= path, target_column=target_column)
+
 
     else:
         parser.print_help()
