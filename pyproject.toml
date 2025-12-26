@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vllama"
-version = "1.4.0"
+version = "1.5.0"
 description = "Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs"
 authors = [
   { name = "Gopu Manvith", email = "manvithgopu1394@gmail.com" }
