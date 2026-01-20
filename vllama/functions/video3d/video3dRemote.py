@@ -248,11 +248,15 @@ print("Saved:", OUTPUT_PLY)
 
     # Kaggle CLI may error even if download succeeded (Windows issue)
     final_ply = output_dir / "output" / f"result_{int(time.time())}.ply"
+    downloaded_ply = output_dir / "output" / "result.ply"
 
-    if not final_ply.exists():
+
+    if not downloaded_ply.exists():
         print("Kaggle CLI output:")
         print(result.stdout)
         print(result.stderr)
-        raise RuntimeError("Download failed: result.ply not found")
+        raise RuntimeError("Download failed: downloaded_ply not found")
+    
+    shutil.move(downloaded_ply, final_ply)
 
     print("Download confirmed:", final_ply)

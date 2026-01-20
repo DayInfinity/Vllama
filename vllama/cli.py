@@ -9,6 +9,7 @@ from .functions.object_detection_video.object_detection_video import (
 # from .functions.image3d.image3d import image_to_3d
 from .functions.image3d.image3dRemote import run_kaggle_image_to_3d
 from .functions.viewer3d.viewer3d import view_3d_model
+from .functions.video3d.video3dRemote import run_kaggle_video_to_3d
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -80,6 +81,13 @@ def main():
     image_to_3d_parser.add_argument("--model", "-m", help="YOLO model to use (default: 'yolov8n.pt')", default="yolov8n.pt")
     image_to_3d_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
     image_to_3d_parser.add_argument("--output_dir", "-o", help="Directory to save output image with detections (default: current directory)")
+
+
+    video_to_3d_parser = subparsers.add_parser("video3d", help="To generate 3d ply files from video path inputs")
+    video_to_3d_parser.add_argument("--path", "-p", help="Path to the input video file")
+    video_to_3d_parser.add_argument("--output_dir", "-o", help="Directory to save output 3D model file")
+    video_to_3d_parser.add_argument("--frame_interval", "-f", type=int, default=10, help="Frame extraction interval from the video (default: 10)")
+    video_to_3d_parser.add_argument("--service", "-s", type=str, choices = ['kaggle'], help="Offload execution to a remote service (eg., 'kaggle' for kaggle notebooks)")
 
 
     view3d_parser = subparsers.add_parser("view3d", help="View 3D model files (PLY, GLB, OBJ, STL, FBX)")
@@ -243,6 +251,18 @@ def main():
         else:
             print("Running 3D model generation locally not implemented yet. Offloading to Kaggle is the only supported option currently.")
             # image_to_3d(path = path, url = url, model_id = model_id, output_dir = output_dir)
+
+
+    elif args.command == "video3d":
+        path = args.path
+        output_dir = args.output_dir or "."
+        frame_interval = args.frame_interval
+        service = args.service
+        if service and service.lower() == "kaggle":
+            run_kaggle_video_to_3d(video_path = path, output_dir = output_dir, frame_interval=frame_interval)
+        else:
+            print("Running 3D model generation locally not implemented yet. Offloading to Kaggle is the only supported option currently.")
+            # video_to_3d(path = path, output_dir = output_dir, frame_interval = frame_interval)
 
 
     elif args.command == "view3d":
