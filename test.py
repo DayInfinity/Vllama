@@ -12,8 +12,6 @@ def main():
             video_path= "input_videos/input_1.mp4",
             output_dir="outputs/video_3d_models",
             frame_interval=10,
-            max_frames_per_batch=25,
-            total_frames_limit=100
         )
         
         print(f"\n🎉 Success! Your 3D model is ready at: {result_ply}")
