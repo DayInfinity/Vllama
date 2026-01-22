@@ -85,6 +85,21 @@ def run_kaggle_video_to_3d(
     kernel_dir = Path(tempfile.mkdtemp(prefix="kaggle_pi3_kernel_"))
     kernel_slug = f"pi3-video-to-3d-{int(time.time())}"
 
+    print("Waiting for dataset to become available...")
+
+    while True:
+        time.sleep(5)
+        check = subprocess.run(
+            ["kaggle", "datasets", "status", f"{username}/{dataset_slug}"],
+            capture_output=True,
+            text=True,
+        )
+
+        if "ready" in check.stdout.lower():
+            print("Dataset is ready ✔")
+            break
+
+
     script_code = f"""
 import subprocess
 from pathlib import Path

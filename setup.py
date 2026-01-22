@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="vllama",
-    version="1.6.1",
+    version="1.6.2",
     author="Gopu Manvith",
     author_email="manvithgopu1394@gmail.com",
     description="Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs",
