@@ -3,15 +3,16 @@ from vllama.functions.object_detection_video.object_detection_video import objec
 from vllama.functions.image3d.image3dRemote import run_kaggle_image_to_3d
 from vllama.functions.viewer3d.viewer3d import view_3d_model
 from vllama.functions.video3d.video3dRemote import run_kaggle_video_to_3d
+from vllama.functions.video3d.video3dLocal import run_local_video_to_3d
 
 
 def main():
     
     try:
         result_ply = run_kaggle_video_to_3d(
-            video_path= "input_videos/input_1.mp4",
+            video_path= "outputs/kk.mp4",
             output_dir="outputs/video_3d_models",
-            frame_interval=10,
+            frame_interval=20,
         )
         
         print(f"\n🎉 Success! Your 3D model is ready at: {result_ply}")
