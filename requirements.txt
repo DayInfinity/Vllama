@@ -10,7 +10,6 @@ kaggle>=1.5.0
 
 # Data Preprocessing & Visualization
 pandas>=1.5.0
-numpy>=1.23.0
 matplotlib>=3.5.0
 seaborn>=0.12.0
 scikit-learn>=1.2.0
@@ -42,3 +41,21 @@ pyrender==0.1.45
 plyfile==1.0.3
 scipy==1.11.4
 pyglet==2.0.10
+
+safetensors>=0.4.0
+einops>=0.7.0
+tqdm>=4.65.0
+huggingface-hub>=0.20.0
+
+opencv-python-headless>=4.8.0
+Pillow>=9.5.0
+av>=10.0.0
+
+scikit-image>=0.21.0
+networkx>=3.1
+
+psutil>=5.9.5
+rich>=13.7.0
+click>=8.1.7
+colorama>=0.4.6
+
