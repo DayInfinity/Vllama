@@ -42,4 +42,5 @@ if __name__ == "__main__":
     #     output_dir="outputs/3d_models"
     # )
     # view_3d_model(model_path="outputs/3d_models/outputs/image_to_3d_20251225_170416.ply")
-    main()
+    # main()
+    view_3d_model(model_path = "outputs/video_3d_models/output/result_1769095744.ply")
