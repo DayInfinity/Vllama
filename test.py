@@ -4,13 +4,14 @@ from vllama.functions.image3d.image3dRemote import run_kaggle_image_to_3d
 from vllama.functions.viewer3d.viewer3d import view_3d_model
 from vllama.functions.video3d.video3dRemote import run_kaggle_video_to_3d
 from vllama.functions.video3d.video3dLocal import run_local_video_to_3d
+from vllama.functions.video3d.convert_mov_mp4 import ensure_mp4
 
 
 def main():
     
     try:
         result_ply = run_kaggle_video_to_3d(
-            video_path= "outputs/kk.mp4",
+            video_path= "outputs/IMG_5267.mov",
             output_dir="outputs/video_3d_models",
             frame_interval=20,
         )
@@ -42,5 +43,8 @@ if __name__ == "__main__":
     #     output_dir="outputs/3d_models"
     # )
     # view_3d_model(model_path="outputs/3d_models/outputs/image_to_3d_20251225_170416.ply")
-    # main()
-    view_3d_model(model_path = "outputs/video_3d_models/output/result_1769095744.ply")
+    main()
+    # view_3d_model(model_path = "outputs/video_3d_models/output/result_1769095744.ply")
+    # mp4_path = ensure_mp4("outputs/IMG_5267.mov")
+
+    # print(f"Converted video path: {mp4_path}")
