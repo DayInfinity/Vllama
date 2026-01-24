@@ -5,6 +5,7 @@ import shutil
 import tempfile
 import subprocess
 from pathlib import Path
+from .convert_mov_mp4 import ensure_mp4
 
 
 def run_kaggle_video_to_3d(
@@ -30,6 +31,8 @@ def run_kaggle_video_to_3d(
 
     if not video_path.exists():
         raise FileNotFoundError(f"Video not found: {video_path}")
+    
+    video_path = Path(ensure_mp4(str(video_path))).resolve() 
 
     print("=" * 70)
     print("PI3 VIDEO → 3D (KAGGLE)")
