@@ -169,7 +169,7 @@ temp/
 kaggle.json
 catboost_info
 
-commands.txt
+# commands.txt
 *.wav 
 *.mp3
 *.pt
