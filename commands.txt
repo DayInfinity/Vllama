@@ -1,0 +1,13 @@
+# Clean old builds (optional but good practice)
+rm dist/
+rm "vllama.egg-info"
+
+pip uninstall vllama
+
+# Rebuild the new version
+python -m build
+
+pip install dist/vllama-1.8.0-py3-none-any.whl
+
+# Upload to PyPI
+twine upload dist/*
