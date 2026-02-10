@@ -5,6 +5,96 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-02-10
+
+### Added
+- **Documentation**: Full documentation overhaul across README, CHANGELOG, and SECURITY.
+
+### Changed
+- Bumped version to 1.10.0.
+- README: Updated version badge to 1.10.0; added command reference for `detect_image`, `detect_video`, `image3d`, `video3d`, `view3d`, and `translate`.
+- README: Updated Key Features list to include object detection, image/video-to-3D, 3D viewer, and translation.
+- README: Updated Recent Updates section to reflect 1.10.0 and 1.9.0; corrected roadmap (video generation supported; clarified local 3D as upcoming).
+- SECURITY.md: Updated supported versions table to 1.10.x and 1.9.x.
+
+### Fixed
+- CLI: Typo in `train` command help text ("woth" → "with").
+
+## [1.9.0] - 2026-02-10
+
+### Changed
+- Updated dependencies and PortAudio support on macOS.
+
+## [1.8.0] - 2026-01-24
+
+### Added
+- MOV support for video-to-3D pipeline.
+
+## [1.7.0] - 2026-01-24
+
+### Changed
+- Updated 3D viewer to display Pi3 models.
+
+## [1.6.2] - 2026-01-22
+
+### Fixed
+- Added sleep time for dataset status polling in video-to-3D.
+
+## [1.6.1] - 2026-01-22
+
+### Added
+- Basic local video-to-3D generation (in addition to Kaggle).
+
+## [1.6.0] - 2026-01-20
+
+### Added
+- Video-to-3D generation (e.g. `vllama video3d` with Kaggle).
+
+## [1.5.0] - 2025-12-26
+
+### Added
+- 3D model viewer (`vllama view3d`) for PLY, GLB, OBJ, STL, FBX.
+
+## [1.4.0] - 2025-12-25
+
+### Added
+- Image-to-3D via Kaggle (`vllama image3d --service kaggle`).
+
+## [1.3.0] - 2025-12-19
+
+### Added
+- Video object detection (`vllama detect_video`) using YOLO.
+
+## [1.2.1] - 2025-12-19
+
+### Fixed
+- Class type declaration compatibility with older Python versions.
+
+## [1.2.0] - 2025-12-13
+
+### Added
+- Image object detection (`vllama detect_image`) using YOLO.
+
+## [1.1.0] - 2025-12-13
+
+### Added
+- Translation models (`vllama translate`) using NLLB.
+
+## [1.0.3] - 2025-12-12
+
+### Fixed
+- List downloads issue.
+
+## [1.0.2] - 2025-12-11
+
+### Changed
+- STT (speech-to-text) updated to use Whisper model.
+
+## [1.0.1] - 2025-12-10
+
+### Changed
+- Text-to-speech updated to use Microsoft TTS model (SpeechT5).
+
 ## [1.0.0] - 2025-12-06
 
 ### Changed
