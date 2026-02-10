@@ -139,7 +139,7 @@ def main():
 
 
     train_parser = subparsers.add_parser("train", help="AutoML model training on processed data")
-    train_parser.add_argument("--path", "-p", help="Path to the datasets folder, woth train_data.csv and test_data.csv")
+    train_parser.add_argument("--path", "-p", help="Path to the datasets folder, with train_data.csv and test_data.csv")
     train_parser.add_argument("--target", "-t", help="Target Column")
 
 

@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/DayInfinity/Vllama)
+[![Version](https://img.shields.io/badge/version-1.10.0-green.svg)](https://github.com/DayInfinity/Vllama)
 
 Vllama is a comprehensive toolkit that simplifies working with vision models, machine learning workflows, and local LLMs. Whether you're preprocessing datasets, training models with AutoML, generating images with state-of-the-art diffusion models, or chatting with local language models directly in VS Code, Vllama makes it easy - locally or on cloud GPUs.
 
@@ -15,6 +15,10 @@ Vllama is a comprehensive toolkit that simplifies working with vision models, ma
 - **🏆 AutoML Training**: Train and compare multiple ML models automatically with hyperparameter tuning
 - **🎨 Image Generation**: Generate images using pre-trained diffusion models (Stable Diffusion, SD-Turbo)
 - **🎬 Video Generation**: Create videos from text prompts using text-to-video models
+- **📷 Object Detection**: Run YOLO object detection on images and videos
+- **🖼️ Image/Video to 3D**: Generate 3D PLY models from images or videos (via Kaggle)
+- **👁️ 3D Viewer**: View 3D model files (PLY, GLB, OBJ, STL, FBX)
+- **🌐 Translation**: Translate text using local NLLB models
 - **🤖 Local LLM Server**: Run language models locally as REST API servers
 - **💬 CLI Chat**: Interactive chat with local LLMs directly from terminal
 - **🔊 Text-to-Speech**: Convert text to speech using local TTS engine
@@ -324,6 +328,68 @@ vllama run_video damo-vilab/text-to-video-ms-1.7b --service kaggle --prompt "A s
 vllama run_video damo-vilab/text-to-video-ms-1.7b
 ```
 
+#### `vllama detect_image`
+Run object detection on an image using YOLO.
+
+```bash
+vllama detect_image --path <image_path> [--url <image_url>] [--model <yolo_model>] [--output_dir <dir>]
+```
+
+**Examples:**
+```bash
+vllama detect_image --path photo.jpg
+vllama detect_image --url https://example.com/image.jpg -o ./outputs
+vllama detect_image --path photo.jpg -m yolov8s.pt
+```
+
+#### `vllama detect_video`
+Run object detection on a video using YOLO.
+
+```bash
+vllama detect_video --path <video_path> [--model <yolo_model>] [--output_dir <dir>]
+```
+
+**Example:**
+```bash
+vllama detect_video --path video.mp4 -o ./outputs
+```
+
+#### `vllama image3d`
+Generate 3D PLY model from an image (Kaggle GPU).
+
+```bash
+vllama image3d --path <image_path> [--url <image_url>] [--service kaggle] [--output_dir <dir>]
+```
+
+**Example:**
+```bash
+vllama image3d --path photo.jpg --service kaggle -o ./outputs
+```
+
+#### `vllama video3d`
+Generate 3D PLY model from a video (Kaggle GPU).
+
+```bash
+vllama video3d --path <video_path> [--service kaggle] [--output_dir <dir>] [--frame_interval <n>]
+```
+
+**Example:**
+```bash
+vllama video3d --path video.mp4 --service kaggle -o ./outputs -f 10
+```
+
+#### `vllama view3d`
+View a 3D model file (PLY, GLB, OBJ, STL, FBX).
+
+```bash
+vllama view3d --path <model_path>
+```
+
+**Example:**
+```bash
+vllama view3d --path model.ply
+```
+
 #### `vllama list`
 List all installed/downloaded models.
 
@@ -465,6 +531,21 @@ vllama stt
 # Listening... Speak now!
 # [You speak: "Hello world"]
 # Transcribed: Hello world
+```
+
+**Note:** Use `--path` to transcribe from an audio file, or run without it for microphone input. Use `--language` for better transcription.
+
+#### `vllama translate`
+Translate text using a local translation model (e.g. NLLB).
+
+```bash
+vllama translate --text <text> [--src <source_lang>] [--tgt <target_lang>] [--model <model_id>]
+```
+
+**Examples:**
+```bash
+vllama translate --text "Hello world" --src en --tgt fr
+vllama translate --text "Bonjour" --src fr --tgt en
 ```
 
 ---
@@ -658,22 +739,21 @@ Vllama automatically optimizes for your GPU:
 
 ## 🔄 Recent Updates
 
-### Version 1.0.0 (Latest)
+### Version 1.10.0 (Latest)
+- 📚 **Documentation**: Full documentation overhaul—README, CHANGELOG, and SECURITY aligned with current features
+- 🏷️ **Version**: Bumped to 1.10.0; all version references and badges updated
+- 📖 **Command reference**: Added missing commands—`detect_image`, `detect_video`, `image3d`, `video3d`, `view3d`, `translate`
+- ✏️ **Minor fixes**: Typo fix in CLI help text (`woth` → `with`)
+
+### Version 1.9.0
+- 📦 Updated dependencies and PortAudio support on macOS
+
+### Version 1.0.0
 - 🆚 **VS Code Extension**: Added support for chatting with local LLMs directly from VS Code
 - 📄 **License Change**: Migrated from GPL-3.0 to Apache-2.0 for greater flexibility
 - 📚 **Documentation**: Comprehensive README updates with all features and workflows
 - 🤝 **Open Source**: Prepared project for public open source release
 - 🔒 **Security**: Enhanced security documentation and best practices
-
-### Version 0.8.1
-- 🎨 Added support for Stable Diffusion Turbo
-- ☁️ Improved Kaggle GPU integration
-- 🔧 Bug fixes and performance improvements
-
-### Version 0.7.0
-- 🤖 AutoML training with hyperparameter tuning
-- 📊 Enhanced visualization outputs
-- 🔄 Better data preprocessing pipeline
 
 ---
 
@@ -780,7 +860,7 @@ Built with:
 - [ ] Multi-GPU support for distributed training
 - [ ] Integration with more cloud GPU providers
 - [ ] Real-time model fine-tuning capabilities
-- [ ] Support for video generation models
+- [ ] Local image-to-3D and video-to-3D (in addition to Kaggle)
 - [ ] Enhanced chat capabilities with RAG (Retrieval-Augmented Generation)
 
 ### Long-term Vision
