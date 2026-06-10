@@ -41,7 +41,7 @@ class CustomInstallCommand(install):
 
 setuptools.setup(
     name="vllama",
-    version="1.10.0",
+    version="1.11.0",
     author="Gopu Manvith",
     author_email="manvithgopu1394@gmail.com",
     description="Comprehensive CLI tool and VS Code extension for vision models, AutoML, and local LLMs",
@@ -95,6 +95,11 @@ setuptools.setup(
         "pyrender",
         "plyfile",
         "imageio_ffmpeg",
+        "paddlepaddle",
+        "paddleocr",
+        "pillow", 
+        "langdetect", 
+        "deep-translator",
     ],
     entry_points={
         "console_scripts": [
