@@ -1,0 +1,96 @@
+/* ── Vllama custom styles ── */
+
+:root {
+  --md-primary-fg-color: #7c3aed;
+  --md-accent-fg-color: #a855f7;
+}
+
+/* Hero section on homepage */
+.hero {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c3aed, #a855f7, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+/* Feature grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.feature-card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  padding: 1.25rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.feature-card:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15);
+}
+
+.feature-card .icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  opacity: 0.75;
+}
+
+/* Install snippet styling */
+.install-box {
+  background: var(--md-code-bg-color);
+  border-left: 4px solid var(--md-primary-fg-color);
+  border-radius: 4px;
+  padding: 1rem 1.5rem;
+  font-family: var(--md-code-font);
+  font-size: 1.1rem;
+  margin: 1.5rem 0;
+}
+
+/* Command reference table */
+.md-typeset table:not([class]) th {
+  background-color: rgba(124, 58, 237, 0.1);
+}
+
+/* Admonition tweak */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: #a855f7;
+}
