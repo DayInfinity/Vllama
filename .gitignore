@@ -176,3 +176,4 @@ catboost_info
 *.avi
 
 input_videos
+.DS_Store
