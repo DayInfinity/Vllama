@@ -47,13 +47,6 @@ Run Stable Diffusion and other diffusion models locally or on Kaggle GPUs.
 </div>
 
 <div class="feature-card" markdown>
-<div class="icon">🏆</div>
-**AutoML**
-
-Preprocess any CSV and auto-train 9+ ML models with hyperparameter tuning in two commands.
-</div>
-
-<div class="feature-card" markdown>
 <div class="icon">🤖</div>
 **Local LLMs**
 
@@ -93,6 +86,13 @@ Text-to-speech and speech-to-text using local models — no cloud API needed.
 **Image/Video to 3D**
 
 Generate 3D `.ply` models from images or videos via Kaggle GPU.
+</div>
+
+<div class="feature-card" markdown>
+<div class="icon">🏆</div>
+**AutoML**
+
+Preprocess any CSV and auto-train 9+ ML models with hyperparameter tuning in two commands.
 </div>
 
 </div>

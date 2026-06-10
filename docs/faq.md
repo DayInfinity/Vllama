@@ -69,24 +69,6 @@ Vllama automatically falls back to CPU or uses memory-efficient settings for low
 
 ---
 
-## AutoML
-
-**"Target column not found"**
-
-Specify the column name explicitly:
-
-```bash
-vllama data --path data.csv --target your_actual_column_name
-```
-
-Use `head data.csv` or `python -c "import pandas as pd; print(pd.read_csv('data.csv').columns.tolist())"` to check your column names.
-
-**Training takes very long**
-
-Large datasets with hyperparameter search take longer. For faster testing, subsample your data first. Training time scales with dataset size × number of models.
-
----
-
 ## Local LLMs
 
 **"VS Code extension can't connect to local LLM"**
@@ -108,6 +90,24 @@ Make sure your system has a working microphone and audio drivers. On Linux, also
 **`vllama stt` requires internet?**
 
 Yes, the STT command uses Google Speech Recognition which sends audio to Google's API. The TTS and translation commands (`vllama tts`, `vllama translate`) run fully offline.
+
+---
+
+## AutoML
+
+**"Target column not found"**
+
+Specify the column name explicitly:
+
+```bash
+vllama data --path data.csv --target your_actual_column_name
+```
+
+Use `head data.csv` or `python -c "import pandas as pd; print(pd.read_csv('data.csv').columns.tolist())"` to check your column names.
+
+**Training takes very long**
+
+Large datasets with hyperparameter search take longer. For faster testing, subsample your data first. Training time scales with dataset size × number of models.
 
 ---
 

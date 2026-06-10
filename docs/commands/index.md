@@ -8,8 +8,6 @@ All Vllama commands, organised by category.
 
 | Command | What it does |
 |---|---|
-| [`vllama data`](data.md) | Preprocess and clean a CSV/Excel/JSON dataset |
-| [`vllama train`](train.md) | AutoML: train and compare multiple models |
 | [`vllama run`](vision.md) | Generate images with diffusion models |
 | [`vllama run_video`](video.md) | Generate video from text prompts |
 | [`vllama detect_image`](detection.md) | YOLO object detection on an image |
@@ -31,6 +29,8 @@ All Vllama commands, organised by category.
 | [`vllama uninstall`](vision.md#uninstall) | Remove a downloaded model from cache |
 | [`vllama post`](vision.md#post) | Send a prompt to a running model session |
 | [`vllama stop`](vision.md#stop) | Stop the running model session |
+| [`vllama data`](data.md) | Preprocess and clean a CSV/Excel/JSON dataset |
+| [`vllama train`](train.md) | AutoML: train and compare multiple models |
 
 ---
 
