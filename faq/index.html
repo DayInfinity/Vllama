@@ -939,15 +939,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automl" class="md-nav__link">
-    <span class="md-ellipsis">
-      AutoML
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#local-llms" class="md-nav__link">
     <span class="md-ellipsis">
       Local LLMs
@@ -960,6 +951,15 @@
   <a href="#speech" class="md-nav__link">
     <span class="md-ellipsis">
       Speech
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automl" class="md-nav__link">
+    <span class="md-ellipsis">
+      AutoML
     </span>
   </a>
   
@@ -1065,15 +1065,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automl" class="md-nav__link">
-    <span class="md-ellipsis">
-      AutoML
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#local-llms" class="md-nav__link">
     <span class="md-ellipsis">
       Local LLMs
@@ -1086,6 +1077,15 @@
   <a href="#speech" class="md-nav__link">
     <span class="md-ellipsis">
       Speech
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automl" class="md-nav__link">
+    <span class="md-ellipsis">
+      AutoML
     </span>
   </a>
   
@@ -1154,15 +1154,6 @@
 <p><strong>"CUDA out of memory"</strong></p>
 <p>Vllama automatically falls back to CPU or uses memory-efficient settings for low-VRAM GPUs. If you still get OOM, try <code>--service kaggle</code>.</p>
 <hr />
-<h2 id="automl">AutoML<a class="headerlink" href="#automl" title="Permanent link">&para;</a></h2>
-<p><strong>"Target column not found"</strong></p>
-<p>Specify the column name explicitly:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>vllama<span class="w"> </span>data<span class="w"> </span>--path<span class="w"> </span>data.csv<span class="w"> </span>--target<span class="w"> </span>your_actual_column_name
-</span></code></pre></div>
-<p>Use <code>head data.csv</code> or <code>python -c "import pandas as pd; print(pd.read_csv('data.csv').columns.tolist())"</code> to check your column names.</p>
-<p><strong>Training takes very long</strong></p>
-<p>Large datasets with hyperparameter search take longer. For faster testing, subsample your data first. Training time scales with dataset size × number of models.</p>
-<hr />
 <h2 id="local-llms">Local LLMs<a class="headerlink" href="#local-llms" title="Permanent link">&para;</a></h2>
 <p><strong>"VS Code extension can't connect to local LLM"</strong></p>
 <p>Make sure <code>vllama run_llm &lt;model&gt;</code> is running and shows <code>Running on http://localhost:2513</code> before opening VS Code chat. Check extension settings for the correct port.</p>
@@ -1174,6 +1165,15 @@
 <p>Make sure your system has a working microphone and audio drivers. On Linux, also install: <code>sudo apt-get install portaudio19-dev</code>.</p>
 <p><strong><code>vllama stt</code> requires internet?</strong></p>
 <p>Yes, the STT command uses Google Speech Recognition which sends audio to Google's API. The TTS and translation commands (<code>vllama tts</code>, <code>vllama translate</code>) run fully offline.</p>
+<hr />
+<h2 id="automl">AutoML<a class="headerlink" href="#automl" title="Permanent link">&para;</a></h2>
+<p><strong>"Target column not found"</strong></p>
+<p>Specify the column name explicitly:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>vllama<span class="w"> </span>data<span class="w"> </span>--path<span class="w"> </span>data.csv<span class="w"> </span>--target<span class="w"> </span>your_actual_column_name
+</span></code></pre></div>
+<p>Use <code>head data.csv</code> or <code>python -c "import pandas as pd; print(pd.read_csv('data.csv').columns.tolist())"</code> to check your column names.</p>
+<p><strong>Training takes very long</strong></p>
+<p>Large datasets with hyperparameter search take longer. For faster testing, subsample your data first. Training time scales with dataset size × number of models.</p>
 <hr />
 <h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
 <ul>
