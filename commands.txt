@@ -4,16 +4,22 @@ rm "vllama.egg-info"
 
 pip uninstall vllama
 
-pip3 uninstall vllama // Mac
-
 # Rebuild the new version
 python -m build
 
-python3 -m build // Mac
 
 pip install dist/vllama-1.9.0-py3-none-any.whl
 
-pip3 install dist/vllama-1.9.0-py3-none-any.whl // Mac
+// Secondary Use commands
+
+rm -rf dist/ 
+rm -rf "vllama.egg-info"
+
+pip3 uninstall vllama 
+
+python3 -m build 
+
+pip3 install dist/vllama-1.11.0-py3-none-any.whl
 
 # Upload to PyPI
 twine upload dist/*

@@ -62,3 +62,8 @@ colorama>=0.4.6
 # For MOV to mp4
 imageio-ffmpeg
 
+paddlepaddle
+paddleocr
+pillow 
+langdetect 
+deep-translator
