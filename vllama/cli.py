@@ -10,6 +10,7 @@ from .functions.object_detection_video.object_detection_video import (
 from .functions.image3d.image3dRemote import run_kaggle_image_to_3d
 from .functions.viewer3d.viewer3d import view_3d_model
 from .functions.video3d.video3dRemote import run_kaggle_video_to_3d
+from .functions.ocr.highOcr import process_image
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -141,6 +142,12 @@ def main():
     train_parser = subparsers.add_parser("train", help="AutoML model training on processed data")
     train_parser.add_argument("--path", "-p", help="Path to the datasets folder, with train_data.csv and test_data.csv")
     train_parser.add_argument("--target", "-t", help="Target Column")
+
+    ocr_parser = subparsers.add_parser("ocr", help = "OCR on images with optional translation and annotation")
+    ocr_parser.add_argument("--path", "-p", help="Path to the input image file")
+    ocr_parser.add_argument("--language", "-l", help="Language code for OCR (e.g., 'en' for English, 'ch' for Chinese)")
+    ocr_parser.add_argument("--annotation", "-a", action="store_true", help="Whether to annotate the image with detected text boxes and translations")
+    ocr_parser.add_argument("--output_dir", "-o", help="Directory to save outputs (annotated image, text files, etc.)", default=".")
 
 
     args = parser.parse_args()
@@ -318,6 +325,13 @@ def main():
         path = args.path
         target_column = args.target
         model_training.run_automl_training(data_dir= path, target_column=target_column)
+
+    elif args.command == "ocr":
+        path = args.path
+        language = args.language or "en"
+        annotation = args.annotation
+        output_dir = args.output_dir or "."
+        process_image(image_path=path, language=language, annotation=annotation, output_dir=output_dir)
 
 
     else:
