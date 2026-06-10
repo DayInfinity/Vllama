@@ -1,0 +1,93 @@
+site_name: Vllama
+site_description: A versatile CLI for local LLMs, image generation, AutoML, speech, and more — with free Kaggle GPU offload.
+site_url: https://dayinfinity.github.io/Vllama
+repo_url: https://github.com/DayInfinity/Vllama
+repo_name: DayInfinity/Vllama
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/248173520.jpg
+  favicon: assets/248173520.jpg
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/DayInfinity/Vllama
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/vllama/
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Quickstart: quickstart.md
+  - Commands:
+    - Overview: commands/index.md
+    - Data Preprocessing: commands/data.md
+    - AutoML Training: commands/train.md
+    - Image Generation: commands/vision.md
+    - Video Generation: commands/video.md
+    - Object Detection: commands/detection.md
+    - Local LLMs: commands/llm.md
+    - Speech: commands/speech.md
+    - Cloud & GPU: commands/cloud.md
+    - 3D Viewer: commands/viewer.md
+  - Guides:
+    - No GPU? Use Kaggle: guides/no-gpu.md
+    - Full AutoML Pipeline: guides/automl-pipeline.md
+    - Local LLM in VS Code: guides/local-llm-vscode.md
+  - FAQ: faq.md
+  - Changelog: changelog.md
