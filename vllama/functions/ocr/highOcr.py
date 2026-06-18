@@ -6,8 +6,33 @@ from paddleocr import PaddleOCR
 from langdetect import detect
 from deep_translator import GoogleTranslator
 from PIL import Image, ImageDraw, ImageFont
+import requests
 
 from vllama.functions.ocr import getOcrModel
+
+
+def translate_text(text, max_retries=3):
+    """
+    Translate text with retry mechanism and fallback.
+    Returns original text if translation fails.
+    """
+    if not text or text.strip() == "":
+        return text
+    
+    for attempt in range(max_retries):
+        try:
+            translated = GoogleTranslator(
+                source="auto",
+                target="en"
+            ).translate(text)
+            return translated
+        except Exception as e:
+            if attempt < max_retries - 1:
+                continue
+            else:
+                # Fallback: return original text with warning
+                print(f"⚠️  Translation failed for '{text[:50]}...': {str(e)}")
+                return text
 
 
 def process_image(image_path, language: str = "en", annotation: bool = False, output_dir: str = "outputs"):
@@ -75,15 +100,7 @@ def process_image(image_path, language: str = "en", annotation: bool = False, ou
                 translated_text = text
 
                 if lang != "en" and lang != "unknown":
-
-                    try:
-                        translated_text = GoogleTranslator(
-                            source="auto",
-                            target="en"
-                        ).translate(text)
-
-                    except:
-                        translated_text = text
+                    translated_text = translate_text(text)
 
                 text_output.append(
                     f"Detected Text : {text}\n"
