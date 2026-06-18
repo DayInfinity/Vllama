@@ -19,7 +19,7 @@ pip3 uninstall vllama
 
 python3 -m build 
 
-pip3 install dist/vllama-1.11.0-py3-none-any.whl
+pip3 install dist/vllama-1.11.1-py3-none-any.whl
 
 # Upload to PyPI
 twine upload dist/*
