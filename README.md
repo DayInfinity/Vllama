@@ -4,7 +4,6 @@
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/pypi/v/vllama.svg)](https://pypi.org/project/vllama/)
 [![Downloads](https://static.pepy.tech/badge/vllama)](https://pepy.tech/projects/vllama)
-[![Downloads](https://static.pepy.tech/badge/vllama)](https://pepy.tech/projects/vllama)
 [![GitHub stars](https://img.shields.io/github/stars/DayInfinity/Vllama?style=social)](https://github.com/DayInfinity/Vllama)
 [![GitHub forks](https://img.shields.io/github/forks/DayInfinity/Vllama?style=social)](https://github.com/DayInfinity/Vllama)
 [![GitHub issues](https://img.shields.io/github/issues/DayInfinity/Vllama)](https://github.com/DayInfinity/Vllama/issues)
