@@ -8,7 +8,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/DayInfinity/Vllama?style=social)](https://github.com/DayInfinity/Vllama)
 [![GitHub forks](https://img.shields.io/github/forks/DayInfinity/Vllama?style=social)](https://github.com/DayInfinity/Vllama)
 [![GitHub issues](https://img.shields.io/github/issues/DayInfinity/Vllama)](https://github.com/DayInfinity/Vllama/issues)
-[![GitHub license](https://img.shields.io/github/license/DayInfinity/Vllama)](https://github.com/DayInfinity/Vllama/blob/main/LICENSE)
+
 <!-- [![Version](https://img.shields.io/badge/version-1.10.0-green.svg)](https://github.com/DayInfinity/Vllama) -->
 Vllama is a comprehensive toolkit that simplifies working with vision models, machine learning workflows, and local LLMs. Whether you're preprocessing datasets, training models with AutoML, generating images with state-of-the-art diffusion models, or chatting with local language models directly in VS Code, Vllama makes it easy - locally or on cloud GPUs.
 
